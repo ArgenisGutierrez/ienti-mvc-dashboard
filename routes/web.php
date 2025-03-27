@@ -9,13 +9,25 @@ use Lib\Route;
 
 Route::get(
     '/', function () {
-        echo 'hola desde el home';
+        header('Content-Type: application/json');
+        return json_encode(
+            [
+            'title' => 'Bienvenido...',
+            'content' => '...'
+            ]
+        );
     }
 );
 
 Route::get(
-    '/usuarios', function () {
-        echo 'hola desde los usuarios';
+    '/usuarios/', function () {
+        return 'hola desde los usuarios';
+    }
+);
+
+Route::get(
+    '/usuarios/:nombre', function ($usuario) {
+        return 'el usuario es: ' .$usuario;
     }
 );
 
