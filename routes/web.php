@@ -6,18 +6,9 @@
 
 /*----- Creacion de rutas ------*/
 use Lib\Route;
+use App\Controllers\HomeController;
 
-Route::get(
-    '/', function () {
-        header('Content-Type: application/json');
-        return json_encode(
-            [
-            'title' => 'Bienvenido...',
-            'content' => '...'
-            ]
-        );
-    }
-);
+Route::get('/', [HomeController::class,'index']);
 
 Route::get(
     '/usuarios/', function () {
