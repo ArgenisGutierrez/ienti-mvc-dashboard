@@ -8,8 +8,9 @@ namespace App\Controllers;
 class Controller
 {
     /*------ Retorna las vistas ------*/
-    public function view($route)
+    public function view($route,$data=[])
     {
+        extract($data);
         if(file_exists("../resources/views/{$route}.php")) {
             ob_start();
             include "../resources/views/{$route}.php";

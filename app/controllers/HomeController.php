@@ -4,11 +4,18 @@
  * ======================================================*/
 
 namespace App\Controllers;
+use App\Models\Role;
 
 class HomeController extends Controller
 {
     public function index()
     {
-        return $this->view('home');
+        $roleModel = new Role();
+        return $this->view(
+            'home', [
+            'title' => 'Home',
+            'name' => 'John'
+            ]
+        );
     }
 }
