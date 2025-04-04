@@ -5,21 +5,12 @@
  * ======================================================*/
 
 /*----- Creacion de rutas ------*/
+use App\Controllers\RoleController;
 use Lib\Route;
 use App\Controllers\HomeController;
 
 Route::get('/', [HomeController::class,'index']);
 
-Route::get(
-    '/usuarios/', function () {
-        return 'hola desde los usuarios';
-    }
-);
-
-Route::get(
-    '/usuarios/:nombre', function ($usuario) {
-        return 'el usuario es: ' .$usuario;
-    }
-);
+Route::get('/roles', [RoleController::class,'index']);
 
 Route::dispatch();
