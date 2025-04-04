@@ -5,14 +5,12 @@
 
 namespace App\Controllers;
 
-class HomeController extends Controller
+class RoleController extends Controller
 {
     public function index()
     {
         return $this->view(
-            'home', [
-            'title' => 'Home',
-            'name' => 'John'
+            'roles', [
             ]
         );
     }
