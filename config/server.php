@@ -1,6 +1,6 @@
 <?php
 define('APP_NAME', 'ienti & manwere');
-define('APP_URL', 'http://localhost/ienti-php/');
+define('APP_URL', 'http://mvc.test/');
 define('KEY_API_MAPS', '');
 date_default_timezone_set(timezoneId: 'America/Mexico_City');
 $fechaHora = date(format: 'Y-m-d H:i:s');
