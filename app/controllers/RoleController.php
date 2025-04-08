@@ -21,9 +21,7 @@ class RoleController extends Controller
         $nombre_rol = $_POST['nombre_rol'];
         $nombre_rol = mb_strtoupper($nombre_rol, 'utf8');
         if (empty($nombre_rol)) {
-            session_start();
-            $_SESSION['mensaje'] = "El Rol Nombre de Rol no puede estar vacio.";
-            $_SESSION['icono'] = "error";
+            \Lib\Alert::error('Error', 'El Rol Nombre de Rol no puede estar vacio.');
             header("Location:" . APP_URL . "roles");
         } else {
             if($rolesModel->createRole(
@@ -34,14 +32,10 @@ class RoleController extends Controller
                 ]
             )
             ) {
-                        session_start();
-                        $_SESSION['mensaje'] = "Role Creado Con Exito";
-                        $_SESSION['icono'] = "success";
-                        header("Location:" . APP_URL . "roles");
+                \Lib\Alert::success('Exito', 'Role Creado Con Exito');
+                header("Location:" . APP_URL . "roles");
             } else {
-                session_start();
-                $_SESSION['mensaje'] = "El Rol No Pude Ser Creado";
-                $_SESSION['icono'] = "error";
+                \Lib\Alert::error('Error', 'El Rol No Pudo Ser Creado');
                 header("Location:" . APP_URL . "roles");
             }
         }
@@ -54,9 +48,7 @@ class RoleController extends Controller
         $nombre_rol = mb_strtoupper($nombre_rol, 'utf8');
 
         if (empty($nombre_rol)) {
-            session_start();
-            $_SESSION['mensaje'] = "El Rol Nombre de Rol no puede estar vacio.";
-            $_SESSION['icono'] = "error";
+            \Lib\Alert::error('Error', 'El Rol Nombre de Rol no puede estar vacio.');
             header("Location:" . APP_URL . "roles");
         } else {
             if($rolesModel->update(
@@ -67,14 +59,10 @@ class RoleController extends Controller
                         ]
             )
             ) {
-                session_start();
-                $_SESSION['mensaje'] = "Role Actualizado Con Exito";
-                $_SESSION['icono'] = "success";
+                \Lib\Alert::success('Exito', 'Role Actualizado Con Exito');
                 header("Location:" . APP_URL . "roles");
             } else {
-                session_start();
-                $_SESSION['mensaje'] = "El Rol No Pudo Ser Actualizado";
-                $_SESSION['icono'] = "error";
+                \Lib\Alert::error('Error', 'El Rol No Pudo Ser Actualizado');
                 header("Location:" . APP_URL . "roles");
             }
 
@@ -84,13 +72,17 @@ class RoleController extends Controller
     public function delete($id_rol)
     {
         if (empty($id_rol)) {
-            $_SESSION['mensaje'] = "Solicitud inválida";
-            $_SESSION['icono'] = "error";
+            \Lib\Alert::error('Error', 'El Rol Id no puede estar vacio.');
             header("Location:" . APP_URL . "roles");
             exit;
         }
         $rolesModel = new Role();
-        $rolesModel->delete($id_rol);
-        header("Location:" . APP_URL . "roles");
+        if($rolesModel->delete($id_rol)) {
+            \Lib\Alert::success('Exito', 'Role Eliminado Con Exito');
+            header("Location:" . APP_URL . "roles");
+        }else{
+            \Lib\Alert::error('Error', 'El Rol No Pudo Ser Eliminado');
+            header("Location:" . APP_URL . "roles");
+        }
     }
 }

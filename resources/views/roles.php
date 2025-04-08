@@ -40,8 +40,6 @@
   <!-- Data Tables -->
   <link rel="stylesheet" href="vendor/datatables/dataTables.bs5.css" />
   <link rel="stylesheet" href="vendor/datatables/dataTables.bs5-custom.css" />
-  <!-- sweetalert2 -->
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -415,15 +413,19 @@
 
   <script src="js/roles.js"></script>
 
-<!-- Data Tables -->
-<script src="vendor/datatables/dataTables.min.js"></script>
-<script src="vendor/datatables/dataTables.bootstrap.min.js"></script>
-<script src="vendor/datatables/custom/custom-datatables.js"></script>
+  <!-- Data Tables -->
+  <script src="vendor/datatables/dataTables.min.js"></script>
+  <script src="vendor/datatables/dataTables.bootstrap.min.js"></script>
+  <script src="vendor/datatables/custom/custom-datatables.js"></script>
 
-<!-- validations -->
-<script src="js/validations.js"></script>
+  <!-- validations -->
+  <script src="js/validations.js"></script>
   <!-- Main Js Required -->
   <script src="js/main.js"></script>
+
+  <!-- sweetalert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <?php Lib\Alert::display();?>
 </body>
 
 </html>
