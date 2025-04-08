@@ -16,7 +16,7 @@ class Route
         self::$routes['GET'][$uri]=$callback;
     }
 
-    public static function set($uri,$callback)
+    public static function post($uri,$callback)
     {
         $uri=trim($uri, '/');
         self::$routes['POST'][$uri]=$callback;

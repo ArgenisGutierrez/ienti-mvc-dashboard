@@ -190,7 +190,7 @@
                 </a>
               </li>
               <li>
-                <a href="">
+              <a href="<?php echo APP_URL;?>roles">
                   <i class="bi bi-file-earmark-lock2-fill"></i>
                   <span class="menu-text">Roles</span>
                 </a>

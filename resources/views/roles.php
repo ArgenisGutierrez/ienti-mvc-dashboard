@@ -277,7 +277,7 @@
                                 aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                              <form action="<?php echo APP_URL; ?>app/controllers/roles/crear_role.php" id="role_form"
+                            <form action="<?php echo APP_URL;?>roles" id="role_form"
                                 method="post" autocomplete="off" class="row g-3 needs-validation" novalidate>
                                 <div class="col-md-12">
                                   <label for="nombre_rol" class="form-label">Nombre</label>
@@ -357,7 +357,7 @@
                           <td>
                             <!-- Formulario para eliminar -->
                             <form id="formEliminar<?php echo $rol['id_rol'] ?>" method="POST"
-                              action="<?php echo APP_URL ?>app/controllers/roles/eliminar_role.php">
+                              action="<?php echo APP_URL ?>roles/">
                               <input type="hidden" name="id_rol" value="<?php echo $rol['id_rol'] ?>">
                               <button type="button" class="btn btn-danger"
                                 onclick="confirmarEliminacion(<?php echo $rol['id_rol'] ?>)">

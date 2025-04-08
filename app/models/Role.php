@@ -21,15 +21,36 @@ class Role extends Conexion
 
     public function createRole($data)
     {
-        extract($data);
-        try{
-            $stmt = $this->getConexion()->prepare("INSERT INTO roles ( nombre_rol,fyh_creacion,estado ) VALUES (:nombre_rol,:fyh_creacion,:estado)");
-            $stmt->bindParam('nombre_rol', $nombre_rol);
-            $stmt->bindParam('fyh_creacion', $fechaHora);
-            $stmt->bindParam('estado', $estado);
+        try {
+            $pdo = $this->getConexion();
+            $stmt = $pdo->prepare(
+                "
+            INSERT INTO roles 
+            (nombre_rol, fyh_creacion, estado) 
+            VALUES (:nombre_rol, :fyh_creacion, :estado)
+        "
+            );
+            $stmt->bindParam(':nombre_rol', $data['nombre_rol']);
+            $stmt->bindParam(':fyh_creacion', $data['fechaHora']);
+            $stmt->bindParam(':estado', $data['estado']);
             $stmt->execute();
             return true;
-        }catch(\Throwable $th){
+        
+        } catch(\Throwable $th) {
+            return false;
+        }
+    }
+
+    public function deleteRole($id)
+    {
+        try {
+            $stmt = $this->getConexion()->prepare(
+                "DELETE FROM roles WHERE id_rol = :id_rol"
+            );
+            $stmt->bindParam(':id_rol', $id);
+            $stmt->execute();
+            return true;
+        } catch (\Throwable $th) {
             return false;
         }
     }
