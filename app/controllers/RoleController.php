@@ -47,17 +47,16 @@ class RoleController extends Controller
         }
     }
 
-    public function delete()
+    public function delete($id_rol)
     {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['id_rol'])) {
+        if (empty($id_rol)) {
             $_SESSION['mensaje'] = "Solicitud inválida";
             $_SESSION['icono'] = "error";
             header("Location:" . APP_URL . "roles");
             exit;
         }
         $rolesModel = new Role();
-        $id_rol = $_POST['id_rol'];
-        $rolesModel->deleteRole($id_rol);
+        $rolesModel->delete($id_rol);
         header("Location:" . APP_URL . "roles");
     }
 }

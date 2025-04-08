@@ -40,6 +40,8 @@
   <!-- Data Tables -->
   <link rel="stylesheet" href="vendor/datatables/dataTables.bs5.css" />
   <link rel="stylesheet" href="vendor/datatables/dataTables.bs5-custom.css" />
+  <!-- sweetalert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -357,64 +359,13 @@
                           <td>
                             <!-- Formulario para eliminar -->
                             <form id="formEliminar<?php echo $rol['id_rol'] ?>" method="POST"
-                              action="<?php echo APP_URL ?>roles/">
+                              action="<?php echo APP_URL; ?>roles/<?php echo $rol['id_rol']?>">
+                              <input type="hidden" name="_method" value="DELETE">
                               <input type="hidden" name="id_rol" value="<?php echo $rol['id_rol'] ?>">
-                              <button type="button" class="btn btn-danger"
-                                onclick="confirmarEliminacion(<?php echo $rol['id_rol'] ?>)">
+                              <button type="submit" class="btn btn-danger">
                                 <i class="bi bi-trash-fill"></i>
                               </button>
                             </form>
-                            <script>
-                              function confirmarEliminacion(idRol) {
-                                Swal.fire({
-                                  title: '¿Eliminar rol?',
-                                  text: "¡Esta acción no se puede deshacer!",
-                                  icon: 'warning',
-                                  showCancelButton: true,
-                                  confirmButtonColor: '#cc2026',
-                                  cancelButtonColor: '#2C395E',
-                                  confirmButtonText: 'Sí, eliminar',
-                                  cancelButtonText: 'Cancelar'
-                                }).then((result) => {
-                                  if (result.isConfirmed) {
-                                    fetch('<?php echo APP_URL ?>app/controllers/roles/eliminar_role.php', {
-                                      method: 'POST',
-                                      headers: {
-                                        'Content-Type': 'application/x-www-form-urlencoded',
-                                      },
-                                      body: 'id_rol=' + idRol,
-                                      credentials: 'same-origin'
-                                    })
-                                      .then(response => {
-                                        if (!response.ok) {
-                                          return response.json().then(err => {
-                                            throw err;
-                                          });
-                                        }
-                                        return response.json();
-                                      })
-                                      .then(data => {
-                                        if (data.success) {
-                                          Swal.fire({
-                                            icon: 'success',
-                                            title: '¡Eliminado!',
-                                            text: data.message,
-                                            confirmButtonColor: '#cc2026'
-                                          }).then(() => location.reload());
-                                        }
-                                      })
-                                      .catch(error => {
-                                        Swal.fire({
-                                          icon: 'error',
-                                          title: 'Error',
-                                          text: error.error || 'Error desconocido',
-                                          confirmButtonColor: '#cc2026'
-                                        });
-                                      });
-                                  }
-                                });
-                              }
-                            </script>
                           </td>
                         </tr>
                         <?php } ?>

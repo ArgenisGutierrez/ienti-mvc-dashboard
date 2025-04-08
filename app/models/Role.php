@@ -41,16 +41,18 @@ class Role extends Conexion
         }
     }
 
-    public function deleteRole($id)
+    public function delete($id_rol)
     {
         try {
             $stmt = $this->getConexion()->prepare(
                 "DELETE FROM roles WHERE id_rol = :id_rol"
             );
-            $stmt->bindParam(':id_rol', $id);
+            $stmt->bindParam(':id_rol', $id_rol);
             $stmt->execute();
             return true;
         } catch (\Throwable $th) {
+            echo $th->getMessage();
+            die();
             return false;
         }
     }
