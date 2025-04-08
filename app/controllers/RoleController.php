@@ -47,6 +47,40 @@ class RoleController extends Controller
         }
     }
 
+    public function update($id_rol)
+    {
+        $rolesModel= new Role();
+        $nombre_rol = $_POST['nombre_rol'];
+        $nombre_rol = mb_strtoupper($nombre_rol, 'utf8');
+
+        if (empty($nombre_rol)) {
+            session_start();
+            $_SESSION['mensaje'] = "El Rol Nombre de Rol no puede estar vacio.";
+            $_SESSION['icono'] = "error";
+            header("Location:" . APP_URL . "roles");
+        } else {
+            if($rolesModel->update(
+                [
+                        'id_rol' => $id_rol,
+                        'nombre_rol' => $nombre_rol,
+                        'fechaHora' => date('Y-m-d H:i:s'),
+                        ]
+            )
+            ) {
+                session_start();
+                $_SESSION['mensaje'] = "Role Actualizado Con Exito";
+                $_SESSION['icono'] = "success";
+                header("Location:" . APP_URL . "roles");
+            } else {
+                session_start();
+                $_SESSION['mensaje'] = "El Rol No Pudo Ser Actualizado";
+                $_SESSION['icono'] = "error";
+                header("Location:" . APP_URL . "roles");
+            }
+
+        }
+    }
+
     public function delete($id_rol)
     {
         if (empty($id_rol)) {

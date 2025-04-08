@@ -334,13 +334,10 @@
                                       aria-label="Close"></button>
                                   </div>
                                   <div class="modal-body">
-                                    <form action="<?php echo APP_URL; ?>app/controllers/roles/actualizar_role.php"
+                                    <form action="<?php echo APP_URL; ?>roles/<?php echo $rol['id_rol'] ?>"
                                       id="role_form" method="post" autocomplete="off" class="row g-3 needs-validation"
                                       novalidate>
-                                      <!-- Campo oculto para el ID -->
-                                      <input type="hidden" id="id_rol" name="id_rol"
-                                        value="<?php echo $rol['id_rol']; ?>">
-
+                                      <input type="hidden" name="_method" value="PUT">
                                       <div class="col-md-12">
                                         <label for="nombre_rol" class="form-label">Nombre</label>
                                         <input type="text" class="form-control" name="nombre_rol"

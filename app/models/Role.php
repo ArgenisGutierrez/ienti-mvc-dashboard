@@ -41,6 +41,20 @@ class Role extends Conexion
         }
     }
 
+    public function update($data)
+    {
+        try{
+            $stmt = $this->getConexion()->prepare("UPDATE roles SET nombre_rol = :nombre_rol, fyh_modificacion = :fyh_modificacion WHERE id_rol = :id_rol");
+            $stmt->bindParam(':id_rol', $data['id_rol']);
+            $stmt->bindParam(':nombre_rol', $data['nombre_rol']);
+            $stmt->bindParam(':fyh_modificacion', $data['fechaHora']);
+            $stmt->execute();
+            return true;
+        }catch(\Throwable $th){
+            return false;
+        }
+    }
+
     public function delete($id_rol)
     {
         try {
@@ -51,8 +65,6 @@ class Role extends Conexion
             $stmt->execute();
             return true;
         } catch (\Throwable $th) {
-            echo $th->getMessage();
-            die();
             return false;
         }
     }
