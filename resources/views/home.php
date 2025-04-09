@@ -60,9 +60,9 @@
 
       <!-- Sidebar brand starts -->
       <div class="brand">
-        <a href="index.html" class="logo">
-          <img src="images/logo.svg" class="d-none d-md-block me-4" alt="Bloom Admin Dashboard" />
-          <img src="images/logo-sm.svg" class="d-block d-md-none me-4" alt="Bloom Admin Dashboard" />
+      <a href="<?php echo APP_URL;?>" class="logo">
+          <img src="images/logo.webp" class="d-none d-md-block me-4" alt="Bloom Admin Dashboard" />
+          <img src="images/logo.webp" class="d-block d-md-none me-4" alt="Bloom Admin Dashboard" />
         </a>
       </div>
       <!-- Sidebar brand ends -->
@@ -184,7 +184,7 @@
                 </a>
               </li>
               <li>
-                <a href="">
+              <a href="<?php echo APP_URL;?>recursos">
                   <i class="bi bi-boxes"></i>
                   <span class="menu-text">Recursos</span>
                 </a>

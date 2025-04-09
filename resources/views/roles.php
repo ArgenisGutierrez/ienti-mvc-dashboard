@@ -177,7 +177,7 @@
                 </a>
               </li>
               <li>
-                <a href="">
+                <a href="<?php echo APP_URL;?>recursos">
                   <i class="bi bi-boxes"></i>
                   <span class="menu-text">Recursos</span>
                 </a>
