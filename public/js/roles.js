@@ -1,4 +1,4 @@
-$(function() {
+$(document).ready(function() {
   $('#role_table').DataTable({
     columnDefs: [
       // Primera columna: habilita todo

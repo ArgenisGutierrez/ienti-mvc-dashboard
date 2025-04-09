@@ -44,18 +44,6 @@
 
 <body>
 
-  <!-- Loading wrapper start -->
-  <div id="loading-wrapper">
-    <div class="spinner">
-      <div class="line1"></div>
-      <div class="line2"></div>
-      <div class="line3"></div>
-      <div class="line4"></div>
-      <div class="line5"></div>
-      <div class="line6"></div>
-    </div>
-  </div>
-  <!-- Loading wrapper end -->
 
   <!-- Page wrapper start -->
   <div class="page-wrapper">
@@ -65,9 +53,9 @@
 
       <!-- Sidebar brand starts -->
       <div class="brand">
-        <a href="index.html" class="logo">
-          <img src="images/logo.svg" class="d-none d-md-block me-4" alt="Bloom Admin Dashboard" />
-          <img src="images/logo-sm.svg" class="d-block d-md-none me-4" alt="Bloom Admin Dashboard" />
+        <a href="<?php echo APP_URL;?>" class="logo">
+          <img src="images/logo.webp" class="d-none d-md-block me-4" alt="Bloom Admin Dashboard" />
+          <img src="images/logo.webp" class="d-block d-md-none me-4" alt="Bloom Admin Dashboard" />
         </a>
       </div>
       <!-- Sidebar brand ends -->
@@ -177,7 +165,7 @@
           <div class="sidebarMenuScroll">
             <ul>
               <li>
-                <a href="">
+                <a href="<?php echo APP_URL;?>">
                   <i class="bi bi-house"></i>
                   <span class="menu-text">Home</span>
                 </a>
@@ -195,7 +183,7 @@
                 </a>
               </li>
               <li>
-                <a href="">
+                <a href="<?php echo APP_URL;?>roles">
                   <i class="bi bi-file-earmark-lock2-fill"></i>
                   <span class="menu-text">Roles</span>
                 </a>
@@ -277,8 +265,8 @@
                                 aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                            <form action="<?php echo APP_URL;?>roles" id="role_form"
-                                method="post" autocomplete="off" class="row g-3 needs-validation" novalidate>
+                              <form action="<?php echo APP_URL;?>roles" id="role_form" method="post" autocomplete="off"
+                                class="row g-3 needs-validation" novalidate>
                                 <div class="col-md-12">
                                   <label for="nombre_rol" class="form-label">Nombre</label>
                                   <input type="text" class="form-control" id="nombre_rol" name="nombre_rol" required />
@@ -411,8 +399,6 @@
   <script src="vendor/newsticker/newsTicker.min.js"></script>
   <script src="vendor/newsticker/custom-newsTicker.js"></script>
 
-  <script src="js/roles.js"></script>
-
   <!-- Data Tables -->
   <script src="vendor/datatables/dataTables.min.js"></script>
   <script src="vendor/datatables/dataTables.bootstrap.min.js"></script>
@@ -425,6 +411,30 @@
 
   <!-- sweetalert2 -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <script src="js/roles.js"></script>
+  <script>
+  $(document).on('submit', 'form[id^="formEliminar"]', function(e) {
+    console.log("Formulario enviado"); // ¿Aparece esto en la consola?
+    e.preventDefault();
+    const form = this;
+
+    Swal.fire({
+      title: "¿Eliminar rol?",
+      text: "¡Esta acción no se puede deshacer!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        form.submit();
+      }
+    });
+  });
+</script>
   <?php Lib\Alert::display();?>
 </body>
 
