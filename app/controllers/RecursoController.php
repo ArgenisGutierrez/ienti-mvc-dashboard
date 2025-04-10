@@ -1,12 +1,12 @@
 <?php
 /* ========================================================
- * ============ Recursos Controller ======================
+ * ============ Home Controller ======================
  * ======================================================*/
 
 namespace App\Controllers;
 use App\Models\Recurso;
 
-class RecursosController extends Controller
+class RecursoController extends Controller
 {
     public function index()
     {
@@ -15,5 +15,4 @@ class RecursosController extends Controller
             'recursos', ['recursos'=>$recursoModel->getAllRecursos()]
         );
     }
-
 }
