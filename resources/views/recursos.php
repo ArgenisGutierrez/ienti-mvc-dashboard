@@ -352,12 +352,11 @@
                                           <div class="modal-body">
                                             <form autocomplete="off"
                                               id="form-editar-<?php echo $recurso['id_recurso'] ?>" method="POST"
-                                              action="<?php echo APP_URL ?>app/controllers/recursos/actualizar_recurso.php"
+                                              action="<?php echo APP_URL; ?>recursos/<?php echo $recurso['id_recurso']; ?>"
                                               enctype="multipart/form-data" class="row g-3 needs-validation" novalidate>
 
                                               <!-- Campos ocultos importantes -->
-                                              <input type="hidden" name="id_recurso"
-                                                value="<?php echo $recurso['id_recurso'] ?>">
+                                              <input type="hidden" name="_method" value="PUT">
                                               <input type="hidden"
                                                 id="tipo_original_<?php echo $recurso['id_recurso'] ?>"
                                                 value="<?php echo $recurso['tipo_recurso'] ?>">
@@ -413,7 +412,7 @@
                                                 <div class="mb-3">
                                                   <label class="form-label">Archivo actual:</label>
                                                   <div class="input-group">
-                                                    <a href="<?php echo $recurso['contenido_recurso'] ?>"
+                                                    <a href="<?php echo "/files/".$recurso['contenido_recurso'] ?>"
                                                       class="form-control" target="_blank">
                                                       <?php echo basename($recurso['contenido_recurso']) ?>
                                                     </a>
@@ -555,12 +554,11 @@
                                           <div class="modal-body">
                                             <form autocomplete="off"
                                               id="form-editar-<?php echo $recurso['id_recurso'] ?>" method="POST"
-                                              action="<?php echo APP_URL ?>app/controllers/recursos/actualizar_recurso.php"
+                                              action="<?php echo APP_URL; ?>recursos/<?php echo $recurso['id_recurso'];?>"
                                               enctype="multipart/form-data" class="row g-3 needs-validation" novalidate>
 
                                               <!-- Campos ocultos importantes -->
-                                              <input type="hidden" name="id_recurso"
-                                                value="<?php echo $recurso['id_recurso'] ?>">
+                                              <input type="hidden" name="_method" value="PUT">
                                               <input type="hidden"
                                                 id="tipo_original_<?php echo $recurso['id_recurso'] ?>"
                                                 value="<?php echo $recurso['tipo_recurso'] ?>">
@@ -616,7 +614,7 @@
                                                 <div class="mb-3">
                                                   <label class="form-label">Archivo actual:</label>
                                                   <div class="input-group">
-                                                    <a href="<?php echo $recurso['contenido_recurso'] ?>"
+                                                    <a href="<?php echo "/files/".$recurso['contenido_recurso'] ?>"
                                                       class="form-control" target="_blank">
                                                       <?php echo basename($recurso['contenido_recurso']) ?>
                                                     </a>
@@ -760,12 +758,11 @@
                                           <div class="modal-body">
                                             <form autocomplete="off"
                                               id="form-editar-<?php echo $recurso['id_recurso'] ?>" method="POST"
-                                              action="<?php echo APP_URL ?>app/controllers/recursos/actualizar_recurso.php"
+                                              action="<?php echo APP_URL; ?>recursos/<?php echo $recurso['id_recurso']; ?>"
                                               enctype="multipart/form-data" class="row g-3 needs-validation" novalidate>
 
                                               <!-- Campos ocultos importantes -->
-                                              <input type="hidden" name="id_recurso"
-                                                value="<?php echo $recurso['id_recurso'] ?>">
+                                              <input type="hidden" name="_method" value="PUT">
                                               <input type="hidden"
                                                 id="tipo_original_<?php echo $recurso['id_recurso'] ?>"
                                                 value="<?php echo $recurso['tipo_recurso'] ?>">
@@ -821,7 +818,7 @@
                                                 <div class="mb-3">
                                                   <label class="form-label">Archivo actual:</label>
                                                   <div class="input-group">
-                                                    <a href="<?php echo $recurso['contenido_recurso'] ?>"
+                                                    <a href="<?php echo "/files/".$recurso['contenido_recurso'] ?>"
                                                       class="form-control" target="_blank">
                                                       <?php echo basename($recurso['contenido_recurso']) ?>
                                                     </a>

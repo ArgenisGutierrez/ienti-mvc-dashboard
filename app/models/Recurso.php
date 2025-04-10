@@ -56,6 +56,38 @@ class Recurso extends Conexion
         }
     }
 
+    public function update($data)
+    {
+        try {
+            $pdo = $this->getConexion();
+            $sentencia = $pdo->prepare(
+                "UPDATE {$this->table} 
+                SET descripcion_recurso = :descripcion,
+                clasificacion_recurso = :clasificacion,
+                tipo_recurso = :tipo,
+                contenido_recurso = :contenido,
+                fyh_modificacion = :fyh_modificacion
+                WHERE id_recurso = :id_recurso
+                "
+            );
+
+            $sentencia->execute(
+                [
+                ':descripcion' => $data['descripcion_recurso'],
+                ':clasificacion' => $data['clasificacion_recurso'],
+                ':tipo' => $data['tipo_recurso'],
+                ':contenido' => $data['contenido_recurso'],
+                ':fyh_modificacion'=>$data['fyh_modificacion'],
+                ':id_recurso' => $data['id_recurso']
+                ]
+            );
+            return true;
+        } catch (\Throwable $th) {
+            return false;
+        }
+
+    }
+
     public function delete($id)
     {
         try {

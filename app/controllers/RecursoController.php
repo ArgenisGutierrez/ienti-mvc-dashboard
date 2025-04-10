@@ -102,6 +102,76 @@ class RecursoController extends Controller
         }
     }
 
+    public function update($id)
+    {
+        $recursoModel = new Recurso();
+        try {
+            // Obtener datos actuales
+            $recurso_actual = $recursoModel->getRecurso($id);
+
+            if (!$recurso_actual) {
+                throw new Exception("Recurso no encontrado");
+            }
+
+            $nuevo_contenido = $recurso_actual['contenido_recurso'];
+            $eliminar_archivo = false;
+
+            // Procesar nuevo archivo
+            if ($_POST['tipo_recurso'] === 'Archivo' && !empty($_FILES['contenido_recurso']['name'])) {
+                $directorio = $_SERVER['DOCUMENT_ROOT'] . '/files/';
+                $nombre_archivo = uniqid() . '_' . basename($_FILES['contenido_recurso']['name']);
+                $ruta_destino = $directorio . $nombre_archivo;
+
+                // Validar y subir archivo
+                if (!move_uploaded_file($_FILES['contenido_recurso']['tmp_name'], $ruta_destino)) {
+                    throw new Exception("Error al subir el archivo");
+                }
+        
+                $nuevo_contenido = $nombre_archivo;
+                $eliminar_archivo = true;
+            } 
+            elseif ($_POST['tipo_recurso'] !== 'Archivo') {
+                $nuevo_contenido = $_POST['contenido_recurso'];
+                $eliminar_archivo = ($recurso_actual['tipo_recurso'] === 'Archivo');
+            }
+
+            // Eliminar archivo anterior si es necesario
+            if ($eliminar_archivo && $recurso_actual['tipo_recurso'] === 'Archivo') {
+                $ruta_anterior = $_SERVER['DOCUMENT_ROOT'] . '/files/' . $recurso_actual['contenido_recurso'];
+        
+                if (file_exists($ruta_anterior)) {
+                    if (!unlink($ruta_anterior)) {
+                        throw new Exception("No se pudo eliminar: $ruta_anterior");
+                    }
+                } else {
+                    throw new Exception("Archivo anterior no encontrado: $ruta_anterior");
+                }
+            }
+
+            // Actualizar BD
+            if($recursoModel->update(
+                [
+                'id_recurso'=>$id,
+                'descripcion_recurso'=>$_POST['descripcion_recurso'],
+                'tipo_recurso'=>$_POST['tipo_recurso'],
+                'clasificacion_recurso'=>$_POST['clasificacion_recurso'],
+                'contenido_recurso'=>$nuevo_contenido,
+                'fyh_modificacion'=>date('Y-m-d H:i:s'),
+                ]
+            )
+            ) {
+                \Lib\Alert::success('Éxito', 'Recurso modificado correctamente');
+            }else{
+                \Lib\Alert::error('Error', 'Error al modificar el recurso en la base de datos');
+            }
+        } catch (Exception $e) {
+            \Lib\Alert::error('Error', $e->getMessage());
+        }finally{
+            header("Location: " . APP_URL . "recursos");
+            exit;
+        }
+    }
+
     public function delete($id)
     {
         $recursoModel = new Recurso();

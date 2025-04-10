@@ -19,6 +19,7 @@ Route::delete('/roles/:id', [RoleController::class,'delete']);
 
 Route::get('/recursos', [RecursoController::class,'index']);
 Route::post('/recursos', [RecursoController::class,'create']);
+Route::put('/recursos/:id', [RecursoController::class,'update']);
 Route::delete('/recursos/:id', [RecursoController::class,'delete']);
 
 Route::dispatch();
