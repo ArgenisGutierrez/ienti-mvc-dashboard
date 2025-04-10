@@ -221,7 +221,7 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                           </div>
                           <div class="modal-body">
-                            <form action="<?php echo APP_URL;?>app/controllers/recursos/crear_recurso.php"
+                            <form action="<?php echo APP_URL;?>recursos"
                               id="recurso_form" method="post" autocomplete="off" class="row g-3 needs-validation"
                               enctype="multipart/form-data" novalidate>
                               <div class="col-md-12">
