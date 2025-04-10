@@ -221,9 +221,9 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                           </div>
                           <div class="modal-body">
-                            <form action="<?php echo APP_URL;?>recursos"
-                              id="recurso_form" method="post" autocomplete="off" class="row g-3 needs-validation"
-                              enctype="multipart/form-data" novalidate>
+                            <form action="<?php echo APP_URL;?>recursos" id="recurso_form" method="post"
+                              autocomplete="off" class="row g-3 needs-validation" enctype="multipart/form-data"
+                              novalidate>
                               <div class="col-md-12">
                                 <label for="descripcion_recurso" class="form-label">Descripción</label>
                                 <input type="text" class="form-control" id="descripcion_recurso"
@@ -312,8 +312,8 @@
                                             break;
                                         case 'Archivo':
                                             ?>
-                                    <a target="_blank" href="<?php echo APP_URL."
-                                      public/recursos/".$recurso['contenido_recurso'];?>" type="button" class="btn
+                                    <a target="_blank" href="<?php echo APP_URL.
+                                      "files/".$recurso['contenido_recurso'];?>" type="button" class="btn
                                       btn-info editar-btn">
                                       <i class="bi bi-cloud-arrow-down-fill"></i>
                                     </a>
@@ -452,10 +452,13 @@
                                   </td>
                                   <td>
                                     <!-- Formulario para eliminar -->
-                                    <button type="button" class="btn btn-danger"
-                                      onclick="confirmarEliminacion(<?php echo $recurso['id_recurso'] ?>)">
-                                      <i class="bi bi-trash-fill"></i>
-                                    </button>
+                                    <form id="formEliminar<?php echo $recurso['id_recurso'] ?>" method="POST"
+                                      action="<?php echo APP_URL; ?>recursos/<?php echo $recurso['id_recurso']?>">
+                                      <input type="hidden" name="_method" value="DELETE">
+                                      <button type="submit" class="btn btn-danger">
+                                        <i class="bi bi-trash-fill"></i>
+                                      </button>
+                                    </form>
                                   </td>
                                 </tr>
                                         <?php
@@ -512,8 +515,8 @@
                                             break;
                                         case 'Archivo':
                                             ?>
-                                    <a target="_blank" href="<?php echo APP_URL."
-                                      public/recursos/".$recurso['contenido_recurso'];?>" type="button" class="btn
+                                    <a target="_blank" href="<?php echo APP_URL.
+                                      "files/".$recurso['contenido_recurso'];?>" type="button" class="btn
                                       btn-info editar-btn">
                                       <i class="bi bi-cloud-arrow-down-fill"></i>
                                     </a>
@@ -652,10 +655,15 @@
                                   </td>
                                   <td>
                                     <!-- Formulario para eliminar -->
-                                    <button type="button" class="btn btn-danger"
-                                      onclick="confirmarEliminacion(<?php echo $recurso['id_recurso'] ?>)">
-                                      <i class="bi bi-trash-fill"></i>
-                                    </button>
+                                    <form id="formEliminar<?php echo $recurso['id_recurso'] ?>" method="POST"
+                                      action="<?php echo APP_URL; ?>recursos/<?php echo $recurso['id_recurso']?>">
+                                      <input type="hidden" name="_method" value="DELETE">
+                                      <input type="hidden" name="id_recurso"
+                                        value="<?php echo $recurso['id_recurso'] ?>">
+                                      <button type="submit" class="btn btn-danger">
+                                        <i class="bi bi-trash-fill"></i>
+                                      </button>
+                                    </form>
                                   </td>
                                 </tr>
                                         <?php
@@ -712,8 +720,8 @@
                                             break;
                                         case 'Archivo':
                                             ?>
-                                    <a target="_blank" href="<?php echo APP_URL."
-                                      public/recursos/".$recurso['contenido_recurso'];?>" type="button" class="btn
+                                    <a target="_blank" href="<?php echo APP_URL.
+                                      "files/".$recurso['contenido_recurso'];?>" type="button" class="btn
                                       btn-info editar-btn">
                                       <i class="bi bi-cloud-arrow-down-fill"></i>
                                     </a>
@@ -852,10 +860,15 @@
                                   </td>
                                   <td>
                                     <!-- Formulario para eliminar -->
-                                    <button type="button" class="btn btn-danger"
-                                      onclick="confirmarEliminacion(<?php echo $recurso['id_recurso'] ?>)">
-                                      <i class="bi bi-trash-fill"></i>
-                                    </button>
+                                    <form id="formEliminar<?php echo $recurso['id_recurso'] ?>" method="POST"
+                                      action="<?php echo APP_URL; ?>recursos/<?php echo $recurso['id_recurso']?>">
+                                      <input type="hidden" name="_method" value="DELETE">
+                                      <input type="hidden" name="id_recurso"
+                                        value="<?php echo $recurso['id_recurso'] ?>">
+                                      <button type="submit" class="btn btn-danger">
+                                        <i class="bi bi-trash-fill"></i>
+                                      </button>
+                                    </form>
                                   </td>
                                 </tr>
                                         <?php
@@ -925,6 +938,28 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <script src="js/recursos.js"></script>
+<script>
+  $(document).on('submit', 'form[id^="formEliminar"]', function(e) {
+    console.log("Formulario enviado"); // ¿Aparece esto en la consola?
+    e.preventDefault();
+    const form = this;
+
+    Swal.fire({
+      title: "¿Eliminar recurso?",
+      text: "¡Esta acción no se puede deshacer!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        form.submit();
+      }
+    });
+  });
+</script>
   <?php Lib\Alert::display();?>
 </body>
 

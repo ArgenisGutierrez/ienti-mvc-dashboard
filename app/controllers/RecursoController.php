@@ -5,6 +5,7 @@
 
 namespace App\Controllers;
 use App\Models\Recurso;
+use Exception;
 
 class RecursoController extends Controller
 {
@@ -84,12 +85,12 @@ class RecursoController extends Controller
         // Insertar en la base de datos
         if($recursoModel->create(
             [
-              'descripcion_recurso'=>$descripcion,
-              'clasificacion_recurso'=>$clasificacion,
-              'tipo_recurso'=>$tipo,
-              'estado'=>$estado,
-              'contenido_recurso'=>$contenido,
-              'fyh_creacion'=>$fyh_creacion
+            'descripcion_recurso'=>$descripcion,
+            'clasificacion_recurso'=>$clasificacion,
+            'tipo_recurso'=>$tipo,
+            'estado'=>$estado,
+            'contenido_recurso'=>$contenido,
+            'fyh_creacion'=>$fyh_creacion
             ]
         )
         ) {
@@ -99,5 +100,73 @@ class RecursoController extends Controller
             \Lib\Alert::error('Error', 'Error al crear el recurso');
             header("Location:" . APP_URL . "recursos");
         }
+    }
+
+    public function delete($id)
+    {
+        $recursoModel = new Recurso();
+        // Verificar método POST y parámetros
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($id)) {
+            \Lib\Alert::error('Error', 'El recurso no existe');
+            header("Location:" . APP_URL . "recursos");
+            exit;
+        }
+
+        try {
+            // Obtener datos del recurso ANTES de eliminar
+            $recurso = $recursoModel->getRecurso($id);
+
+            if (!$recurso) {
+                throw new Exception("Recurso no encontrado");
+            }
+
+            // Si el recurso es de tipo 'Archivo', proceder a eliminar el archivo físico
+            if ($recurso['tipo_recurso'] === 'Archivo') {
+                $url_contenido = $recurso['contenido_recurso'];
+
+                // Definir la ruta base y asegurarse de que termina en "/"
+                $ruta_base = rtrim($_SERVER['DOCUMENT_ROOT'], '/') . "/files/";
+        
+                // Obtener el nombre del archivo a partir de la URL
+                $ruta_url = parse_url($url_contenido, PHP_URL_PATH);
+                $nombre_archivo = basename($ruta_url);
+                $ruta_completa = $ruta_base . $nombre_archivo;
+
+                // Verificar que las rutas sean válidas
+                $ruta_real = realpath($ruta_completa);
+                $ruta_base_real = realpath($ruta_base);
+                if (!$ruta_real || strpos($ruta_real, $ruta_base_real) !== 0) {
+                    throw new Exception("Ruta de archivo inválida: " . $ruta_completa);
+                }
+
+                // Comprobar que el archivo existe y se intenta eliminar
+                if (file_exists($ruta_completa)) {
+                    if (!unlink($ruta_completa)) {
+                        throw new Exception("Error al eliminar el archivo: " . $ruta_completa);
+                    }
+                } else {
+                    // Si el archivo no existe, se registra una advertencia y se continúa
+                    error_log("Advertencia: El archivo no existe en la ruta: " . $ruta_completa);
+                }
+            }
+
+            // Eliminar el registro de la base de datos
+            if($recursoModel->delete($id)) {
+                \Lib\Alert::success('Éxito', 'Recurso eliminado correctamente');
+                header("Location:" . APP_URL . "recursos");
+                exit;
+            }else {
+                \Lib\Alert::error('Error', 'Error al eliminar el recurso de la base de datos');
+                header("Location:" . APP_URL . "recursos");
+                exit;
+            }
+        } catch (Exception $e) {
+            \Lib\Alert::error('Error', $e->getMessage());
+        } catch (Exception $e) {
+            \Lib\Alert::error('Error', $e->getMessage());
+        }
+
+        header("Location:" . APP_URL . "recursos");
+        exit;
     }
 }

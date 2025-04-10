@@ -19,6 +19,16 @@ class Recurso extends Conexion
         }
     }
 
+    public function getRecurso($id)
+    {
+        try {
+            $stmt = $this->getConexion()->query("SELECT * FROM {$this->table} WHERE id_recurso = $id");
+            return $stmt->fetch(\PDO::FETCH_ASSOC);
+        } catch (\Throwable $th) {
+            return [];
+        }
+    }
+
     public function create($data)
     {
         try {
@@ -42,6 +52,18 @@ class Recurso extends Conexion
             );
             return true;
         } catch(\Throwable $th) {
+            return false;
+        }
+    }
+
+    public function delete($id)
+    {
+        try {
+            $pdo = $this->getConexion();
+            $sentencia = $pdo->prepare("DELETE FROM {$this->table} WHERE id_recurso = :id");
+            $sentencia->execute([':id' => $id]);
+            return true;
+        } catch (\Throwable $th) {
             return false;
         }
     }
