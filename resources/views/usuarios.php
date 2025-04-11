@@ -253,7 +253,7 @@
                                   <option selected disabled value="">Asignar...</option>
                                   <?php foreach ($roles as $role) { ?>
                                   <option value="<?php echo $role['id_rol'] ?>">
-                                        <?php echo $role['nombre_rol'] ?>
+                                    <?php echo $role['nombre_rol'] ?>
                                   </option>
                                   <?php } ?>
                                 </select>
@@ -289,19 +289,19 @@
                       <?php foreach ($usuarios as $usuario) { ?>
                       <tr>
                         <td>
-                            <?php echo $usuario['nombre_usuario'] ?>
+                          <?php echo $usuario['nombre_usuario'] ?>
                         </td>
                         <td>
-                            <?php echo $usuario['nombre_rol'] ?>
+                          <?php echo $usuario['nombre_rol'] ?>
                         </td>
                         <td>
-                            <?php echo $usuario['email_usuario'] ?>
+                          <?php echo $usuario['email_usuario'] ?>
                         </td>
                         <td>
-                            <?php echo $usuario['fyh_creacion'] ?>
+                          <?php echo $usuario['fyh_creacion'] ?>
                         </td>
                         <td>
-                            <?php if ($usuario['estado'] == 1) {;
+                          <?php if ($usuario['estado'] == 1) {;
                                 echo "Activo";
                             } else {
                                 echo "Desactivado";
@@ -327,11 +327,10 @@
                                     aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                  <form action="<?php echo APP_URL; ?>app/controllers/usuarios/actualizar_usuario.php"
+                                  <form action="<?php echo APP_URL; ?>usuarios/<?php echo $usuario['id_usuario']?>"
                                     method="post" autocomplete="off" class="row g-3 needs-validation" novalidate>
                                     <!-- Campo oculto para el ID -->
-                                    <input type="hidden" id="id_usuario" name="id_usuario"
-                                      value="<?php echo $usuario['id_usuario']; ?>">
+                                    <input type="hidden" name="_method" value="PUT">
 
                                     <div class="col-md-12">
                                       <label for="nombre_usuario" class="form-label">Nombre</label>
@@ -346,24 +345,24 @@
                                     <div class="col-md-12">
                                       <label for="validationCustom04" class="form-label">Role</label>
                                       <select name="id_rol" class="form-select" id="validationCustom04" required>
-                                        <option selected disabled value="">Asignar...</option>
-                                        <?php
-                                        foreach ($roles as $role) {
-                                            ?>
-                                        <option value="<?php echo $role['id_rol'] ?>">
-                                            <?php echo $role['nombre_rol'] ?>
+                                        <option disabled value="">Asignar...</option>
+                                        <?php foreach ($roles as $role): ?>
+                                        <option value="<?php echo $role['id_rol'] ?>" <?php echo
+                                          ($role['id_rol']==$usuario['id_rol']) ? 'selected' : '' ?>>
+                                          <?php echo $role['nombre_rol'] ?>
                                         </option>
-                                            <?php
-                                        }
-                                        ?>
+                                        <?php endforeach; ?>
                                       </select>
                                     </div>
+
                                     <div class="col-md-12">
                                       <label for="validationCustom04" class="form-label">Estado</label>
                                       <select name="estado" class="form-select" id="validationCustom04" required>
-                                        <option selected disabled value="">Asignar...</option>
-                                        <option value="1">Activo</option>
-                                        <option value="0">Desactivado</option>
+                                        <option disabled value="">Asignar...</option>
+                                        <option value="1" <?php echo ($usuario['estado']==1) ? 'selected' : '' ?>>Activo
+                                        </option>
+                                        <option value="0" <?php echo ($usuario['estado']==0) ? 'selected' : '' ?>
+                                          >Desactivado</option>
                                       </select>
                                     </div>
                                     <div class="modal-footer">

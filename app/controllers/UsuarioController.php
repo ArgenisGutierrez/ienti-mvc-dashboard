@@ -72,6 +72,50 @@ class UsuarioController extends Controller
         }
     }
 
+    public function update($id)
+    {
+        $usuarioModel = new Usuario();
+        // Verificar método POST
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            \Lib\Alert::info('Error', 'Acceso Denegado');
+            header("Location:" . APP_URL . "usuarios");
+            exit;
+        }
+
+        // Obtener datos
+        $id_usuario = $id ?? null;
+        $nombre_usuario = trim($_POST['nombre_usuario'] ?? '');
+        $email_usuario = trim($_POST['email_usuario'] ?? '');
+        $id_rol = $_POST['id_rol'] ?? null;
+        $estado = $_POST['estado'] ?? null;
+
+        // Validaciones
+        if(empty($id_usuario) || empty($nombre_usuario) || empty($email_usuario) || empty($id_rol)) {
+            \Lib\Alert::error('Error', 'Todos los campos son obligatorios');
+            header("Location:" . APP_URL . "usuarios");
+            exit;
+        }
+
+        //Actualicar en la base de datos
+        if($usuarioModel->update(
+            [
+              'id_usuario' => $id_usuario,
+              'nombre_usuario' => $nombre_usuario,
+              'email_usuario' => $email_usuario,
+              'id_rol' => $id_rol,
+              'fyh_modificacion' => date('Y-m-d H:i:s'),
+              'estado' => $estado
+            ]
+        )
+        ) {
+            \Lib\Alert::success('Usuario actualizado', 'El usuario se actualizo correctamente');
+        }else {
+            \Lib\Alert::error('Error', 'El usuario no se pudo actualizar en la base de datos');
+        }
+        header("Location:" . APP_URL . "usuarios");
+        exit;
+    }
+
     public function delete($id)
     {
         $usuarioModel = new Usuario();

@@ -28,6 +28,7 @@ Route::delete('/recursos/:id', [RecursoController::class,'delete']);
 /*----- Rutas de usuarios ------*/
 Route::get('/usuarios', [UsuarioController::class,'index']);
 Route::post('/usuarios', [UsuarioController::class,'create']);
+Route::put('/usuarios/:id', [UsuarioController::class,'update']);
 Route::delete('/usuarios/:id', [UsuarioController::class,'delete']);
 
 Route::dispatch();

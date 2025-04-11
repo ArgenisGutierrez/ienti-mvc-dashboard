@@ -53,6 +53,34 @@ class Usuario extends Conexion
         }
     }
 
+    public function update($data)
+    {
+        try {
+            $stmt= $this->getConexion()->prepare(
+                "UPDATE usuarios 
+        SET nombre_usuario = :nombre,
+            email_usuario = :email,
+            id_rol = :rol,
+            estado = :estado,
+            fyh_modificacion = :fecha
+        WHERE id_usuario = :id"
+            );
+            $stmt->execute(
+                [
+                ':nombre' => $data['nombre_usuario'],
+                ':email' => $data['email_usuario'],
+                ':rol' => $data['id_rol'],
+                ':estado' => $data['estado'],
+                ':fecha' => $data['fyh_modificacion'],
+                ':id' => $data['id_usuario']
+                ]
+            );
+              return true;
+        } catch (\Throwable $th) {
+            return false;
+        }
+    }
+
     public function delete($id)
     {
         try {
