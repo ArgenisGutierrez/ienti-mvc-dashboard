@@ -9,6 +9,7 @@ use App\Controllers\RoleController;
 use Lib\Route;
 use App\Controllers\HomeController;
 use App\Controllers\RecursoController;
+use App\Controllers\UsuarioController;
 
 Route::get('/', [HomeController::class,'index']);
 
@@ -21,5 +22,7 @@ Route::get('/recursos', [RecursoController::class,'index']);
 Route::post('/recursos', [RecursoController::class,'create']);
 Route::put('/recursos/:id', [RecursoController::class,'update']);
 Route::delete('/recursos/:id', [RecursoController::class,'delete']);
+
+Route::get('/usuarios', [UsuarioController::class,'index']);
 
 Route::dispatch();

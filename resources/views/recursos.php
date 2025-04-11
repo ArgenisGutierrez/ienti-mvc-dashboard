@@ -171,7 +171,7 @@
                 </a>
               </li>
               <li>
-                <a href="">
+                <a href="<?php echo APP_URL;?>usuarios">
                   <i class="bi bi-person-video2"></i>
                   <span class="menu-text">Usuarios</span>
                 </a>
