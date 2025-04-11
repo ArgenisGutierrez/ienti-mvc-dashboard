@@ -221,7 +221,7 @@
                       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                      <form action="<?php echo APP_URL; ?>app/controllers/usuarios/crear_usuario.php" id="usuario_form" method="post" autocomplete="off" class="row g-3 needs-validation" novalidate>
+                      <form action="<?php echo APP_URL; ?>usuarios" id="usuario_form" method="post" autocomplete="off" class="row g-3 needs-validation" novalidate>
                         <div class="col-md-12">
                           <label for="nombre_usuario" class="form-label">Nombre</label>
                           <input type="text" class="form-control" id="nombre_usuario" name="nombre_usuario" required />
