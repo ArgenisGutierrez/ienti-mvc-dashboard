@@ -6,6 +6,7 @@
 namespace App\Controllers;
 use App\Models\Usuario;
 use App\Models\Role;
+use Exception;
 
 class UsuarioController extends Controller
 {
@@ -69,5 +70,42 @@ class UsuarioController extends Controller
             header("Location:" . APP_URL . "usuarios");
             exit;
         }
+    }
+
+    public function delete($id)
+    {
+        $usuarioModel = new Usuario();
+        // Verificar método POST y existencia de ID
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($id)) {
+            \Lib\Alert::error('Error', 'Acceso Denegado');
+            header("Location:" . APP_URL . "ususarios");
+            exit;
+        }
+
+        try {
+            if (!$id || $id <= 0) {
+                throw new Exception("ID de usuario inválido");
+            }
+
+            // Verificar si es el último administrador
+            $adminCount = $usuarioModel->countAdmins();
+
+            $rolUsuario = $usuarioModel->getUsuario($id);
+
+            if ($rolUsuario['nombre_rol'] === 'Administrador' && $adminCount === 1) {
+                throw new Exception("No se puede eliminar al último administrador");
+            }
+
+            // Eliminar usuario
+            if($usuarioModel->delete($id)) {
+                \Lib\Alert::success('Usuario eliminado', 'El usuario se elimino correctamente');
+            }else {
+                \Lib\Alert::error('Error', 'El usuario no se pudo eliminar en la base de datos');
+            }
+        } catch (Exception $e) {
+            \Lib\Alert::error('Error', $e->getMessage());
+        }
+        header("Location:" . APP_URL . "usuarios");
+        exit;
     }
 }

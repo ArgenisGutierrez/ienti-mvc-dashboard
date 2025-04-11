@@ -12,7 +12,17 @@ class Usuario extends Conexion
     public function getAllUsuarios()
     {
         try {
-            $stmt = $this->getConexion()->query("SELECT u.nombre_usuario,r.nombre_rol,u.email_usuario,u.fyh_creacion,u.estado FROM {$this->table} u JOIN roles r ON r.id_rol = u.id_rol");
+            $stmt = $this->getConexion()->query("SELECT u.id_usuario, u.nombre_usuario,r.nombre_rol,u.email_usuario,u.fyh_creacion,u.estado FROM {$this->table} u JOIN roles r ON r.id_rol = u.id_rol");
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (\Throwable $th) {
+            return [];
+        }
+    }
+
+    public function getUsuario($id)
+    {
+        try {
+            $stmt = $this->getConexion()->query("SELECT u.nombre_usuario,r.nombre_rol,u.email_usuario,u.fyh_creacion,u.estado FROM {$this->table} u JOIN roles r ON r.id_rol = u.id_rol WHERE u.id_usuario = {$id}");
             return $stmt->fetchAll(\PDO::FETCH_ASSOC);
         } catch (\Throwable $th) {
             return [];
@@ -41,5 +51,27 @@ class Usuario extends Conexion
         } catch (\Throwable $th) {
             return false;
         }
+    }
+
+    public function delete($id)
+    {
+        try {
+            $stmt = $this->getConexion()->prepare("DELETE FROM {$this->table} WHERE id_usuario = :id");
+            return $stmt->execute(['id' => $id]);
+        } catch (\Throwable $th) {
+            return false;
+        }
+    }
+
+    public function countAdmins()
+    {
+        $stmt = $this->getConexion()->prepare(
+            "SELECT COUNT(*) 
+             FROM usuarios u
+             INNER JOIN roles r ON u.id_rol = r.id_rol
+             WHERE r.nombre_rol = 'Administrador'"
+        );
+        $stmt->execute();
+        return $stmt->fetchColumn();
     }
 }
