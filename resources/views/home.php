@@ -213,7 +213,6 @@
             </div>
             <div class="page-title d-none d-md-block">
               <h5>Welcome back,
-                <?php echo $name?>
               </h5>
             </div>
           </div>
@@ -262,7 +261,7 @@
                         <div class="sale-details">
                           <h5 class="text-light">Usuarios</h5>
                           <h3>
-                            <?php echo $numero_usuarios ?>
+                            <?php echo $usuarios ?>
                           </h3>
                         </div>
                       </div>
@@ -275,7 +274,7 @@
                         <div class="sale-details">
                           <h5 class="text-light">Recursos</h5>
                           <h3>
-                            <?php echo $numero_recursos ?>
+                            <?php echo $recursos ?>
                           </h3>
                         </div>
                       </div>
