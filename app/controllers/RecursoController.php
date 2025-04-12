@@ -1,242 +1,211 @@
 <?php
-/* ========================================================
- * ============ Home Controller ======================
- * ======================================================*/
-
 namespace App\Controllers;
+
 use App\Models\Recurso;
 use Exception;
+use Lib\Alert;
 
 class RecursoController extends Controller
 {
+    protected $recursoModel;
+    protected $uploadDir;
+
+    public function __construct()
+    {
+        $this->recursoModel = new Recurso();
+        $this->uploadDir = $_SERVER['DOCUMENT_ROOT'] . '/files/';
+        $this->createUploadDir();
+    }
+
     public function index()
     {
-        $recursoModel = new Recurso();
-        return $this->view(
-            'recursos', ['recursos'=>$recursoModel->getAllRecursos()]
-        );
+        $recursos = $this->recursoModel->getAllRecursos();
+        return $this->view('recursos', ['recursos' => $recursos]);
     }
 
     public function create()
     {
-        $recursoModel = new Recurso();
-        // Validar campos obligatorios
-        if (empty($_POST['descripcion_recurso']) 
-            || empty($_POST['clasificacion_recurso']) 
-            || empty($_POST['tipo_recurso'])
-        ) {
-            \Lib\Alert::error('Error', 'Todos los campos son obligatorios');
-            header("Location:" . APP_URL . "recursos");
-        }
-
-        // Obtener datos del formulario
-        $descripcion = $_POST['descripcion_recurso'];
-        $clasificacion = $_POST['clasificacion_recurso'];
-        $tipo = $_POST['tipo_recurso'];
-        $estado = '1';
-        $contenido = '';
-        $fyh_creacion = date('Y-m-d H:i:s');
-
-        // Manejar contenido según el tipo
-        if ($tipo === 'Archivo') {
-            // Validar archivo subido
-            if (!isset($_FILES['contenido_recurso']) 
-                || $_FILES['contenido_recurso']['error'] !== UPLOAD_ERR_OK
-            ) {
-                \Lib\Alert::error('Error', 'Debe seleccionar un archivo');
-                header("Location:" . APP_URL . "recursos");
-                exit;
-            }
-
-            // Configurar directorio y nombre del archivo
-            $directorioDestino = $_SERVER['DOCUMENT_ROOT'] . '/files/';
-            $nombreArchivo = uniqid() . '_' . basename($_FILES['contenido_recurso']['name']);
-            $rutaCompleta = $directorioDestino . $nombreArchivo;
-
-            // Crear directorio si no existe
-            if (!file_exists($directorioDestino)) {
-                mkdir($directorioDestino, 0755, true);
-            }
-            // Verificar si puedes subir archivos
-            if (!is_writable($directorioDestino)) {
-                \Lib\Alert::error('Error', 'No tienes permiso para subir archivos a la carpeta');
-                header("Location:" . APP_URL . "recursos");
-            }
-            // Mover el archivo
-            if (move_uploaded_file($_FILES['contenido_recurso']['tmp_name'], $rutaCompleta)) {
-                $contenido = $nombreArchivo;
+        try {
+            // Validación básica
+            $this->validateRequiredFields($_POST, ['descripcion_recurso', 'clasificacion_recurso', 'tipo_recurso']);
+            
+            $data = $this->prepareData();
+            
+            if($this->recursoModel->create($data)) {
+                Alert::success('Éxito', 'Recurso creado correctamente');
             } else {
-                echo $_FILES['contenido_recurso']['error'];
-                die();
-                \Lib\Alert::error('Error', 'Error al subir el archivo');
-                header("Location:" . APP_URL . "recursos");
-                exit;
+                Alert::error('Error', 'Error al crear el recurso');
             }
-        } else {
-            // Validar URL/Video
-            $contenido = $_POST['contenido_recurso'] ?? '';
-            if (empty($contenido)) {
-                \Lib\Alert::error('Error', 'Debe ingresar una URL/Video');
-                header("Location:" . APP_URL . "recursos");
-                exit;
-            }
+        } catch (Exception $e) {
+            Alert::error('Error', $e->getMessage());
         }
-
-        // Insertar en la base de datos
-        if($recursoModel->create(
-            [
-            'descripcion_recurso'=>$descripcion,
-            'clasificacion_recurso'=>$clasificacion,
-            'tipo_recurso'=>$tipo,
-            'estado'=>$estado,
-            'contenido_recurso'=>$contenido,
-            'fyh_creacion'=>$fyh_creacion
-            ]
-        )
-        ) {
-            \Lib\Alert::success('Éxito', 'Recurso creado correctamente');
-            header("Location:" . APP_URL . "recursos");
-        }else{
-            \Lib\Alert::error('Error', 'Error al crear el recurso');
-            header("Location:" . APP_URL . "recursos");
-        }
+        $this->redirectToRecursos();
     }
 
     public function update($id)
     {
-        $recursoModel = new Recurso();
         try {
-            // Obtener datos actuales
-            $recurso_actual = $recursoModel->getRecurso($id);
-
-            if (!$recurso_actual) {
-                throw new Exception("Recurso no encontrado");
-            }
-
-            $nuevo_contenido = $recurso_actual['contenido_recurso'];
-            $eliminar_archivo = false;
-
-            // Procesar nuevo archivo
-            if ($_POST['tipo_recurso'] === 'Archivo' && !empty($_FILES['contenido_recurso']['name'])) {
-                $directorio = $_SERVER['DOCUMENT_ROOT'] . '/files/';
-                $nombre_archivo = uniqid() . '_' . basename($_FILES['contenido_recurso']['name']);
-                $ruta_destino = $directorio . $nombre_archivo;
-
-                // Validar y subir archivo
-                if (!move_uploaded_file($_FILES['contenido_recurso']['tmp_name'], $ruta_destino)) {
-                    throw new Exception("Error al subir el archivo");
-                }
-        
-                $nuevo_contenido = $nombre_archivo;
-                $eliminar_archivo = true;
-            } 
-            elseif ($_POST['tipo_recurso'] !== 'Archivo') {
-                $nuevo_contenido = $_POST['contenido_recurso'];
-                $eliminar_archivo = ($recurso_actual['tipo_recurso'] === 'Archivo');
-            }
-
-            // Eliminar archivo anterior si es necesario
-            if ($eliminar_archivo && $recurso_actual['tipo_recurso'] === 'Archivo') {
-                $ruta_anterior = $_SERVER['DOCUMENT_ROOT'] . '/files/' . $recurso_actual['contenido_recurso'];
-        
-                if (file_exists($ruta_anterior)) {
-                    if (!unlink($ruta_anterior)) {
-                        throw new Exception("No se pudo eliminar: $ruta_anterior");
-                    }
-                } else {
-                    throw new Exception("Archivo anterior no encontrado: $ruta_anterior");
-                }
-            }
-
-            // Actualizar BD
-            if($recursoModel->update(
-                [
-                'id_recurso'=>$id,
-                'descripcion_recurso'=>$_POST['descripcion_recurso'],
-                'tipo_recurso'=>$_POST['tipo_recurso'],
-                'clasificacion_recurso'=>$_POST['clasificacion_recurso'],
-                'contenido_recurso'=>$nuevo_contenido,
-                'fyh_modificacion'=>date('Y-m-d H:i:s'),
-                ]
-            )
-            ) {
-                \Lib\Alert::success('Éxito', 'Recurso modificado correctamente');
-            }else{
-                \Lib\Alert::error('Error', 'Error al modificar el recurso en la base de datos');
+            $recurso = $this->getRecurso($id);
+            $data = $this->prepareUpdateData($id, $recurso);
+            
+            if($this->recursoModel->update($data)) {
+                Alert::success('Éxito', 'Recurso actualizado correctamente');
+            } else {
+                Alert::error('Error', 'Error al actualizar el recurso');
             }
         } catch (Exception $e) {
-            \Lib\Alert::error('Error', $e->getMessage());
-        }finally{
-            header("Location: " . APP_URL . "recursos");
-            exit;
+            Alert::error('Error', $e->getMessage());
         }
+        $this->redirectToRecursos();
     }
 
     public function delete($id)
     {
-        $recursoModel = new Recurso();
-        // Verificar método POST y parámetros
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($id)) {
-            \Lib\Alert::error('Error', 'El recurso no existe');
-            header("Location:" . APP_URL . "recursos");
-            exit;
-        }
-
         try {
-            // Obtener datos del recurso ANTES de eliminar
-            $recurso = $recursoModel->getRecurso($id);
-
-            if (!$recurso) {
-                throw new Exception("Recurso no encontrado");
-            }
-
-            // Si el recurso es de tipo 'Archivo', proceder a eliminar el archivo físico
-            if ($recurso['tipo_recurso'] === 'Archivo') {
-                $url_contenido = $recurso['contenido_recurso'];
-
-                // Definir la ruta base y asegurarse de que termina en "/"
-                $ruta_base = rtrim($_SERVER['DOCUMENT_ROOT'], '/') . "/files/";
-        
-                // Obtener el nombre del archivo a partir de la URL
-                $ruta_url = parse_url($url_contenido, PHP_URL_PATH);
-                $nombre_archivo = basename($ruta_url);
-                $ruta_completa = $ruta_base . $nombre_archivo;
-
-                // Verificar que las rutas sean válidas
-                $ruta_real = realpath($ruta_completa);
-                $ruta_base_real = realpath($ruta_base);
-                if (!$ruta_real || strpos($ruta_real, $ruta_base_real) !== 0) {
-                    throw new Exception("Ruta de archivo inválida: " . $ruta_completa);
-                }
-
-                // Comprobar que el archivo existe y se intenta eliminar
-                if (file_exists($ruta_completa)) {
-                    if (!unlink($ruta_completa)) {
-                        throw new Exception("Error al eliminar el archivo: " . $ruta_completa);
-                    }
-                } else {
-                    // Si el archivo no existe, se registra una advertencia y se continúa
-                    error_log("Advertencia: El archivo no existe en la ruta: " . $ruta_completa);
-                }
-            }
-
-            // Eliminar el registro de la base de datos
-            if($recursoModel->delete($id)) {
-                \Lib\Alert::success('Éxito', 'Recurso eliminado correctamente');
-                header("Location:" . APP_URL . "recursos");
-                exit;
-            }else {
-                \Lib\Alert::error('Error', 'Error al eliminar el recurso de la base de datos');
-                header("Location:" . APP_URL . "recursos");
-                exit;
+            $this->validatePostRequest();
+            $recurso = $this->getRecurso($id);
+            $this->deleteFileIfNeeded($recurso);
+            
+            if($this->recursoModel->delete($id)) {
+                Alert::success('Éxito', 'Recurso eliminado correctamente');
+            } else {
+                Alert::error('Error', 'Error al eliminar el recurso');
             }
         } catch (Exception $e) {
-            \Lib\Alert::error('Error', $e->getMessage());
-        } catch (Exception $e) {
-            \Lib\Alert::error('Error', $e->getMessage());
+            Alert::error('Error', $e->getMessage());
+        }
+        $this->redirectToRecursos();
+    }
+
+    /************************************
+     * Métodos auxiliares protegidos *
+     ************************************/
+    protected function validateRequiredFields($input, $fields)
+    {
+        foreach ($fields as $field) {
+            if (empty($input[$field])) {
+                throw new Exception('Todos los campos son obligatorios');
+            }
+        }
+    }
+
+    protected function prepareData()
+    {
+        $tipo = $_POST['tipo_recurso'];
+        $contenido = $this->handleContent($tipo);
+
+        return [
+            'descripcion_recurso' => $_POST['descripcion_recurso'],
+            'clasificacion_recurso' => $_POST['clasificacion_recurso'],
+            'tipo_recurso' => $tipo,
+            'estado' => '1',
+            'contenido_recurso' => $contenido,
+            'fyh_creacion' => date('Y-m-d H:i:s')
+        ];
+    }
+
+    protected function handleContent($tipo)
+    {
+        if ($tipo === 'Archivo') {
+            return $this->handleFileUpload();
         }
 
-        header("Location:" . APP_URL . "recursos");
+        if (empty($_POST['contenido_recurso'])) {
+            throw new Exception('Debe ingresar una URL/Video');
+        }
+        
+        return $_POST['contenido_recurso'];
+    }
+
+    protected function handleFileUpload()
+    {
+        if (!isset($_FILES['contenido_recurso']) || $_FILES['contenido_recurso']['error'] !== UPLOAD_ERR_OK) {
+            throw new Exception('Debe seleccionar un archivo válido');
+        }
+
+        $nombreArchivo = uniqid() . '_' . basename($_FILES['contenido_recurso']['name']);
+        $rutaDestino = $this->uploadDir . $nombreArchivo;
+
+        if (!move_uploaded_file($_FILES['contenido_recurso']['tmp_name'], $rutaDestino)) {
+            throw new Exception('Error al subir el archivo');
+        }
+
+        return $nombreArchivo;
+    }
+
+    protected function prepareUpdateData($id, $recurso)
+    {
+        $tipo = $_POST['tipo_recurso'];
+        $contenido = $this->handleUpdateContent($recurso, $tipo);
+
+        return [
+            'id_recurso' => $id,
+            'descripcion_recurso' => $_POST['descripcion_recurso'],
+            'clasificacion_recurso' => $_POST['clasificacion_recurso'],
+            'tipo_recurso' => $tipo,
+            'contenido_recurso' => $contenido,
+            'fyh_modificacion' => date('Y-m-d H:i:s')
+        ];
+    }
+
+    protected function handleUpdateContent($recurso, $nuevoTipo)
+    {
+        $nuevoContenido = $recurso['contenido_recurso'];
+
+        if ($nuevoTipo === 'Archivo' && !empty($_FILES['contenido_recurso']['name'])) {
+            $this->deleteOldFile($recurso['contenido_recurso']);
+            $nuevoContenido = $this->handleFileUpload();
+        } elseif ($nuevoTipo !== 'Archivo') {
+            $nuevoContenido = $_POST['contenido_recurso'];
+            if ($recurso['tipo_recurso'] === 'Archivo') {
+                $this->deleteOldFile($recurso['contenido_recurso']);
+            }
+        }
+
+        return $nuevoContenido;
+    }
+
+    protected function deleteOldFile($nombreArchivo)
+    {
+        $rutaArchivo = $this->uploadDir . basename($nombreArchivo);
+        if (file_exists($rutaArchivo)) {
+            unlink($rutaArchivo);
+        }
+    }
+
+    protected function getRecurso($id)
+    {
+        $recurso = $this->recursoModel->getRecurso($id);
+        if (!$recurso) {
+            throw new Exception('Recurso no encontrado');
+        }
+        return $recurso;
+    }
+
+    protected function validatePostRequest()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            throw new Exception('Método no permitido');
+        }
+    }
+
+    protected function deleteFileIfNeeded($recurso)
+    {
+        if ($recurso['tipo_recurso'] === 'Archivo') {
+            $this->deleteOldFile($recurso['contenido_recurso']);
+        }
+    }
+
+    protected function createUploadDir()
+    {
+        if (!file_exists($this->uploadDir)) {
+            mkdir($this->uploadDir, 0755, true);
+        }
+    }
+
+    protected function redirectToRecursos()
+    {
+        header("Location: " . APP_URL . "recursos");
         exit;
     }
 }
