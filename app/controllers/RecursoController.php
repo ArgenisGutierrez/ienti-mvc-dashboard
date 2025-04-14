@@ -1,4 +1,14 @@
 <?php
+/**
+ * Controlador para la gestión de Recursos
+ * 
+ * Maneja las operaciones CRUD para los recursos del sistema incluyendo:
+ * - Listado de recursos
+ * - Creación de nuevos recursos
+ * - Actualización de recursos existentes
+ * - Eliminación de recursos
+ */
+
 namespace App\Controllers;
 
 use App\Models\Recurso;

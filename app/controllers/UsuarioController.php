@@ -1,7 +1,14 @@
 <?php
-/* ========================================================
- * ============ Home Controller ======================
- * ======================================================*/
+/**
+ * Controlador para la gestión de usuarios
+ * 
+ * Maneja las operaciones CRUD para los usuarios del sistema incluyendo:
+ * - Listado de usuarios
+ * - Obtención de datos de un usuario
+ * - Creación de nuevos usuarios
+ * - Actualización de usuarios existentes
+ * - Eliminación de usuarios
+ */
 
 namespace App\Controllers;
 use App\Models\Usuario;
