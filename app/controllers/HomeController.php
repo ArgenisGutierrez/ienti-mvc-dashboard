@@ -20,4 +20,9 @@ class HomeController extends Controller
             ]
         );
     }
+
+    public function error404()
+    {
+        return $this->view('/errors/404');
+    }
 }

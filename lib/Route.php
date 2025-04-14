@@ -71,6 +71,7 @@ class Route
                 return;
             }
         }
-        echo '404 Not Found';
+        //retornar vista 404
+        header("Location:".APP_URL."404");
     }
 }
