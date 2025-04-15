@@ -14,7 +14,7 @@ if(!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
   </title>
 
   <!-- Meta -->
-  <link rel="shortcut icon" href="images/favicon.svg" />
+  <link rel="shortcut icon" href="images/icon.ico" />
 
   <!-- *************
             ************ Common Css Files *************

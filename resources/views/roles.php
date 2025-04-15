@@ -14,15 +14,7 @@ if(!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
   </title>
 
   <!-- Meta -->
-  <meta name="description" content="Marketplace for Bootstrap Admin Dashboards" />
-  <meta name="author" content="Bootstrap Gallery" />
-  <link rel="canonical" href="https://www.bootstrap.gallery/">
-  <meta property="og:url" content="https://www.bootstrap.gallery">
-  <meta property="og:title" content="Admin Templates - Dashboard Templates | Bootstrap Gallery">
-  <meta property="og:description" content="Marketplace for Bootstrap Admin Dashboards">
-  <meta property="og:type" content="Website">
-  <meta property="og:site_name" content="Bootstrap Gallery">
-  <link rel="shortcut icon" href="images/favicon.svg" />
+  <link rel="shortcut icon" href="images/icon.ico" />
 
   <!-- *************
             ************ Common Css Files *************

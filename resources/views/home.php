@@ -9,9 +9,9 @@ if(!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title></title>
+  <title><?php echo APP_NAME?></title>
 
-  <link rel="shortcut icon" href="images/favicon.svg" />
+  <link rel="shortcut icon" href="images/icon.ico" />
 
   <!-- *************
             ************ Common Css Files *************

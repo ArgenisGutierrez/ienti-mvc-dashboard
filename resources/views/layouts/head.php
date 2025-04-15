@@ -16,16 +16,6 @@
       <!-- Header actions ccontainer start -->
       <div class="header-actions-container">
 
-        <!-- Search container start -->
-        <div class="search-container me-4 d-xl-block d-lg-none">
-
-          <!-- Search input group start -->
-          <input type="text" class="form-control" placeholder="Search" />
-          <!-- Search input group end -->
-
-        </div>
-        <!-- Search container end -->
-
         <!-- Header actions start -->
         <div class="header-actions d-xl-flex d-lg-none gap-4">
           <div class="dropdown">
@@ -69,10 +59,6 @@
               </div>
             </div>
           </div>
-          <a href="account-settings.html" data-bs-toggle="tooltip" data-bs-placement="bottom"
-            data-bs-custom-class="custom-tooltip-blue" data-bs-title="Settings">
-            <i class="bi bi-gear fs-5"></i>
-          </a>
         </div>
         <!-- Header actions start -->
 
@@ -80,7 +66,7 @@
         <div class="header-profile d-flex align-items-center">
           <div class="dropdown">
             <a href="#" id="userSettings" class="user-settings" data-toggle="dropdown" aria-haspopup="true">
-              <span class="user-name d-none d-md-block">Michelle White</span>
+            <span class="user-name d-none d-md-block"><?php echo $_SESSION['nombre']?></span>
               <span class="avatar">
                 <img src="images/user7.png" alt="User Avatar" />
                 <span class="status online"></span>
