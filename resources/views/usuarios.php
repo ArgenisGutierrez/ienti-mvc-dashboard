@@ -1,3 +1,8 @@
+<?php
+session_start();
+if(!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
+    session_regenerate_id(true);
+    ?>
 <!DOCTYPE html>
 <html lang="es-MX">
 
@@ -9,14 +14,6 @@
   </title>
 
   <!-- Meta -->
-  <meta name="description" content="Marketplace for Bootstrap Admin Dashboards" />
-  <meta name="author" content="Bootstrap Gallery" />
-  <link rel="canonical" href="https://www.bootstrap.gallery/">
-  <meta property="og:url" content="https://www.bootstrap.gallery">
-  <meta property="og:title" content="Admin Templates - Dashboard Templates | Bootstrap Gallery">
-  <meta property="og:description" content="Marketplace for Bootstrap Admin Dashboards">
-  <meta property="og:type" content="Website">
-  <meta property="og:site_name" content="Bootstrap Gallery">
   <link rel="shortcut icon" href="images/favicon.svg" />
 
   <!-- *************
@@ -49,7 +46,7 @@
   <div class="page-wrapper">
 
     <!-- Page header starts -->
-    <?php require_once 'layouts/header.php';?>
+    <?php include_once 'layouts/head.php';?>
     <!-- Page header ends -->
 
     <!-- Main container start -->
@@ -57,8 +54,14 @@
     <div class="main-container">
 
       <!-- Sidebar wrapper start -->
-    <?php require_once 'layouts/menu.php';?>
+    <?php include_once 'layouts/menu.php';?>
       <!-- Sidebar wrapper end -->
+      <!-- Content wrapper scroll start -->
+      <div class="content-wrapper-scroll">
+
+        <!-- Main header starts -->
+    <?php include_once 'layouts/header.php';?>
+        <!-- Main header ends -->
 
       <!-- Main container start -->
       <div class="content-wrapper">
@@ -166,7 +169,7 @@
                             <?php echo $usuario['fyh_creacion'] ?>
                         </td>
                         <td>
-                            <?php if ($usuario['estado'] == 1) {;
+                            <?php if ($usuario['estado'] == 1) {
                                 echo "Activo";
                             } else {
                                 echo "Desactivado";
@@ -325,5 +328,11 @@
     </script>
     <?php Lib\Alert::display();?>
 </body>
-
 </html>
+
+    <?php
+}else{
+    header('Location:'.APP_URL.'login');
+    exit();
+}
+?>

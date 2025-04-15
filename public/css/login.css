@@ -15,8 +15,9 @@
   font-style: normal;
   font-display: swap;
 }
+
 .login-container {
-  background: #eef1f6;
+  background: #2c395e;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -36,16 +37,20 @@
   width: 450px;
   min-height: 320px;
 }
+
 .login-box .login-logo {
   display: flex;
 }
+
 .login-box .login-logo img {
   width: 150px;
 }
+
 .login-box .btn img.login-icon {
   width: 30px;
   height: 30px;
 }
+
 .login-box .login-form-footer {
   border-top: 1px solid #ffffff;
 }
@@ -56,14 +61,17 @@
     width: auto;
   }
 }
+
 /******** Maintenance Screen ********/
 .maintenance-screen {
   background: #1553a3;
   color: #ffffff;
 }
+
 .maintenance-screen h1 {
   font-size: 5rem;
 }
+
 .maintenance-screen .btn {
   padding: 0.7rem 1.8rem;
   -webkit-border-radius: 50px;
@@ -73,6 +81,7 @@
   background: transparent;
   border: 2px solid #ffffff;
 }
+
 .maintenance-screen .btn:hover {
   color: #1553a3;
   background: #ffffff;
@@ -84,15 +93,18 @@
     font-size: 3rem;
   }
 }
+
 /************* Error Page *************/
 .error-screen {
   background: #e22132;
   color: #ffffff;
 }
+
 .error-screen h1 {
   font-family: Rubik Mono One;
   font-size: 15rem;
 }
+
 .error-screen .btn {
   padding: 0.7rem 1.8rem;
   -webkit-border-radius: 50px;
@@ -102,6 +114,7 @@
   background: transparent;
   border: 2px solid #ffffff;
 }
+
 .error-screen .btn:hover {
   color: #e22132;
   background: #ffffff;

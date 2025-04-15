@@ -1,6 +1,7 @@
 <?php
-
-if(isset($_SESSION)) {
+session_start();
+if(!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
+    session_regenerate_id(true);
     ?>
 <!DOCTYPE html>
 <html lang="es-MX">
@@ -51,7 +52,7 @@ if(isset($_SESSION)) {
   <div class="page-wrapper">
 
     <!-- Page header starts -->
-    <?php include_once "layouts/header.php";?>
+    <?php include_once "layouts/head.php";?>
     <!-- Page header ends -->
 
     <!-- Main container start -->
@@ -65,40 +66,7 @@ if(isset($_SESSION)) {
       <div class="content-wrapper-scroll">
 
         <!-- Main header starts -->
-        <div class="main-header d-flex align-items-center justify-content-between position-relative">
-          <div class="d-flex align-items-center justify-content-center">
-            <div class="page-icon">
-              <i class="bi bi-house"></i>
-            </div>
-            <div class="page-title d-none d-md-block">
-              <h5>Welcome back,
-              </h5>
-            </div>
-          </div>
-          <!-- Live updates start -->
-          <ul class="updates d-flex align-items-end flex-column overflow-hidden" id="updates">
-            <li>
-              <a href="javascript:void(0)">
-                <i class="bi bi-envelope-paper text-red font-1x me-2"></i>
-                <span>12 emails from David Michaiah.</span>
-              </a>
-            </li>
-            <li>
-              <a href="javascript:void(0)">
-                <i class="bi bi-bar-chart text-blue font-1x me-2"></i>
-                <span>15 new features updated successfully.</span>
-              </a>
-            </li>
-            <li>
-              <a href="javascript:void(0)">
-                <i class="bi bi-folder-check text-yellow font-1x me-2"></i>
-                <span>The media folder is created successfully.</span>
-              </a>
-            </li>
-          </ul>
-          <!-- Live updates end -->
-
-        </div>
+    <?php include_once "layouts/header.php";?>
         <!-- Main header ends -->
 
         <!-- Content wrapper start -->
@@ -198,9 +166,9 @@ if(isset($_SESSION)) {
 </body>
 
 </html>
-
     <?php
 }else{
     header('Location:'.APP_URL.'login');
+    exit();
 }
 ?>

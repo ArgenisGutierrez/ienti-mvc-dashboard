@@ -29,6 +29,17 @@ class Usuario extends Conexion
         }
     }
 
+    public function getByEmail($email)
+    {
+        try {
+            $stmt = $this->getConexion()->prepare("SELECT * FROM {$this->table} WHERE email_usuario = :email");
+            $stmt->execute([':email' => $email]);
+            return $stmt->fetch(\PDO::FETCH_ASSOC) ?: null; // Devuelve null si no existe
+        } catch (\Throwable $th) {
+            return [];
+        }
+    }
+
     public function create($data)
     {
         try {

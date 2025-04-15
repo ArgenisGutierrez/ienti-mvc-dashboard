@@ -33,7 +33,7 @@
             <h5 class="fw-lighter mb-4">
                 Lo sentimos, la página que buscas no esta disponible
             </h5>
-            <a href="<?php echo APP_URL;?>" class="btn m-auto fw-bold">Regresar a Home</a>
+            <a href="<?php echo APP_URL;?>" class="btn m-auto fw-bold">Regresar a la página principal</a>
         </div>
 
         <!--**************************
