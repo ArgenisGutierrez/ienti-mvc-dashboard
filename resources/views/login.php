@@ -1,5 +1,14 @@
+<?php
+session_start();
+if(!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
+    session_regenerate_id(true);
+    header('Location:'.APP_URL);
+    exit();
+}else{
+    $old_email = $_SESSION['email'] ?? '';
+    ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es-MX">
 
 <head>
   <!-- Required meta tags -->
@@ -9,7 +18,7 @@
   <!-- Meta -->
   <meta name="description" content="Bloom - Responsive Bootstrap 5 Dashboard Template" />
   <meta name="author" content="Bootstrap Gallery" />
-  <link rel="shortcut icon" href="images/favicon.svg" />
+  <link rel="shortcut icon" href="images/icon.ico" />
 
   <!-- Title -->
   <title>
@@ -50,12 +59,19 @@
           <div class="mb-3">
             <label class="form-label">Correo</label>
             <input id="email_usuario" name="email_usuario" type="text" class="form-control"
-              placeholder="Ingresa tu correo" required />
+              placeholder="Ingresa tu correo" value="<?php echo $old_email ?>" required />
           </div>
-          <div class="mb-3">
+          <div class="mb-3 position-relative">
             <label class="form-label">Contraseña</label>
-            <input id="password_usuario" name="password_usuario" type="password" class="form-control"
-              placeholder="Ingresa tu contraseña" required />
+            <div class="input-group">
+              <input id="password_usuario" name="password_usuario" type="password" class="form-control"
+                placeholder="Ingresa tu contraseña" required />
+              <button type="button"
+                class="btn btn-link text-decoration-none position-absolute end-0 top-50 translate-middle-y"
+                onclick="togglePasswordVisibility()" style="z-index: 5;">
+                <i id="eyeIcon" class="bi bi-eye-slash"></i>
+              </button>
+            </div>
           </div>
           <div class="d-flex align-items-center justify-content-between">
             <a href="#" class="text-blue text-decoration-underline">Olvidaste tu contraseña?</a>
@@ -83,7 +99,25 @@
   <!-- Particles JS -->
   <script src="vendor/particles/particles.min.js"></script>
   <script src="vendor/particles/particles-custom.js"></script>
+  <script>
+    function togglePasswordVisibility() {
+      const passwordInput = document.getElementById('password_usuario');
+      const eyeIcon = document.getElementById('eyeIcon');
 
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        eyeIcon.classList.remove('bi-eye-slash');
+        eyeIcon.classList.add('bi-eye');
+      } else {
+        passwordInput.type = 'password';
+        eyeIcon.classList.remove('bi-eye');
+        eyeIcon.classList.add('bi-eye-slash');
+      }
+    }
+  </script>
 </body>
 
 </html>
+<?php
+}
+?>

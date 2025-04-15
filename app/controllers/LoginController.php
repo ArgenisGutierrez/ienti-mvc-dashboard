@@ -10,7 +10,6 @@
 
 namespace App\Controllers;
 use App\Models\Usuario;
-use Exception;
 use Lib\Alert;
 
 
@@ -67,8 +66,10 @@ class LoginController extends Controller
             $_SESSION['rol'] = $usuario['id_rol'];
             header("Location:" . APP_URL);
         } else {
+            session_start();
+            $_SESSION['email'] = $email;
             Alert::error('Error', 'Credenciales incorrectas');
-            header("Location:" . APP_URL . "/login");
+            header("Location:" . APP_URL . "login");
         }
     }
 

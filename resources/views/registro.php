@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
   <!-- Meta -->
-  <link rel="shortcut icon" href="images/favicon.svg" />
+  <link rel="shortcut icon" href="images/icon.ico" />
 
   <!-- Title -->
   <title>
@@ -46,44 +46,66 @@
           <h5 class="fw-light mb-5">Registrate para acceder a nuestra plataforma</h5>
           <div class="mb-3">
             <label class="form-label">Nombre</label>
-            <input name="nombre" type="email" class="form-control" placeholder="Ingresa tu nombre" required />
+            <input name="nombre" type="text" class="form-control" placeholder="Ingresa tu nombre" required />
           </div>
           <div class="mb-3">
             <label class="form-label">Correo</label>
             <input name="email" type="email" class="form-control" placeholder="Ingresa tu correo" required />
           </div>
           <div class="mb-3">
-            <label class="form-label">Contraseña</label>
-            <input name="password" id="password" type="password" class="form-control"
-              placeholder="Ingresa tu contraseña" required />
+            <label class="form-label">Contraseña</label>
+            <div class="position-relative">
+              <input name="password" id="password" type="password" class="form-control pe-5"
+                placeholder="Ingresa tu contraseña" required />
+              <button type="button"
+                class="btn btn-link text-decoration-none position-absolute end-0 top-50 translate-middle-y"
+                onclick="togglePasswordVisibility('password', 'eyeIconPassword')"
+                style="transform: translateY(-50%) !important;">
+                <i id="eyeIconPassword" class="bi bi-eye-slash"></i>
+              </button>
+            </div>
           </div>
+
+          <!-- Campo de confirmación modificado -->
           <div class="mb-3">
-            <label class="form-label">Confirmar contraseña</label>
-            <input name="password_confirm" id="password_confirm" type="password" class="form-control"
-              placeholder="Confirmar contraseña" required />
+            <label class="form-label">Confirmar contraseña</label>
+            <div class="position-relative">
+              <input name="password_confirm" id="password_confirm" type="password" class="form-control pe-5"
+                placeholder="Confirmar contraseña" required />
+              <button type="button"
+                class="btn btn-link text-decoration-none position-absolute end-0 top-50 translate-middle-y"
+                onclick="togglePasswordVisibility('password_confirm', 'eyeIconConfirm')"
+                style="transform: translateY(-50%) !important;">
+                <i id="eyeIconConfirm" class="bi bi-eye-slash"></i>
+              </button>
+            </div>
             <div class="invalid-feedback" id="password-feedback" style="display: none;">
               Las contraseñas no coinciden
             </div>
           </div>
-          <div class="d-flex align-items-center justify-content-between">
-            <div class="form-check m-0">
-              <input name="terms" class="form-check-input" type="checkbox" value="true" id="termsConditions" required />
-              <label class="form-check-label" for="rememberPassword">Estoy de acuerdo con los términos y
-                condiciones</label>
-            </div>
-          </div>
-          <div class="d-grid py-3">
-            <button type="submit" class="btn btn-lg btn-primary">
-              Registrarme
-            </button>
-          </div>
-          <div class="text-center pt-3">
-            <span>Ya tienes una cuenta?</span>
-            <a href="<?php echo APP_URL;?>login" class="text-blue text-decoration-underline ms-2">Iniciar sesión</a>
+          <div class="invalid-feedback" id="password-feedback" style="display: none;">
+            Las contraseñas no coinciden
           </div>
         </div>
+        <div class="d-flex align-items-center justify-content-between">
+          <div class="form-check m-0">
+            <input name="terms" class="form-check-input" type="checkbox" value="true" id="termsConditions" required />
+            <label class="form-check-label" for="rememberPassword">Estoy de acuerdo con los términos y
+              condiciones</label>
+          </div>
+        </div>
+        <div class="d-grid py-3">
+          <button type="submit" class="btn btn-lg btn-primary">
+            Registrarme
+          </button>
+        </div>
+        <div class="text-center pt-3">
+          <span>Ya tienes una cuenta?</span>
+          <a href="<?php echo APP_URL;?>login" class="text-blue text-decoration-underline ms-2">Iniciar sesión</a>
+        </div>
       </div>
-    </form>
+  </div>
+  </form>
   </div>
   <!-- Login box end -->
   <!-- validations -->
@@ -126,6 +148,41 @@
       }
     });
   </script>
+  <script>
+    function togglePasswordVisibility(fieldId, iconId) {
+      const passwordInput = document.getElementById(fieldId);
+      const eyeIcon = document.getElementById(iconId);
+
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        eyeIcon.classList.remove('bi-eye-slash');
+        eyeIcon.classList.add('bi-eye');
+      } else {
+        passwordInput.type = 'password';
+        eyeIcon.classList.remove('bi-eye');
+        eyeIcon.classList.add('bi-eye-slash');
+      }
+    }
+  </script>
+  <style>
+    /* Estilos mejorados */
+    .bi-eye-slash,
+    .bi-eye {
+      font-size: 1.2rem;
+      color: #6c757d;
+      cursor: pointer;
+      padding-right: 12px;
+    }
+
+    .position-absolute {
+      right: 5px;
+      z-index: 2;
+    }
+
+    .form-control.pe-5 {
+      padding-right: 2.5rem !important;
+    }
+  </style>
 </body>
 
 </html>
