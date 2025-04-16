@@ -10,6 +10,7 @@
 
 namespace App\Controllers;
 use App\Models\Usuario;
+use Exception;
 use Lib\Alert;
 
 
@@ -85,7 +86,43 @@ class LoginController extends Controller
     }
     public function registrarse()
     {
-        var_dump($_POST);
-        die();
+        $nombre = $_POST['nombre'];
+        $email_usuario= filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
+        $password_usuario = $_POST['password'];
+        $password_confirm = $_POST['password_confirm'];
+        $terms = $_POST['terms'];
+        $fyh_creacion = date('Y-m-d H:i:s');
+
+        try {
+            if ($terms !== 'true') {
+                throw new Exception("No puedes registrar un usuario si no aceptas los términos y condiciones", 1);
+            } 
+
+            if ($password_usuario !== $password_confirm) {
+                throw new Exception("Las contraseñas no coinciden", 1);
+            }
+
+            if($this->usuarioModel->create(
+                [
+                'nombre_usuario' => $nombre,
+                'email_usuario' => $email_usuario,
+                'password_usuario' => password_hash($password_usuario, PASSWORD_DEFAULT),
+                'id_rol' => 2,
+                'fyh_creacion' => $fyh_creacion,
+                'estado' =>'1',
+                ]
+            )
+            ) {
+                Alert::success('Exito', 'Registro exitoso');
+                header("Location:" . APP_URL . "login");
+                exit();
+            }else {
+                throw new Exception("Error al registrar el usuario en la db", 1);
+            }
+        } catch (Exception $e) {
+            Alert::error('Error', $e->getMessage());
+            header("Location:" . APP_URL . "registro");
+            exit();
+        }
     }
 }
