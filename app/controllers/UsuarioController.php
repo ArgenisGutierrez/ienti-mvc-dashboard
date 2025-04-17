@@ -58,10 +58,12 @@ class UsuarioController extends Controller
 
         // Hash de contraseña
         $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+        $verification_token = bin2hex(random_bytes(50));
         if($usuarioModel->create(
             [
               'nombre_usuario' => $nombre,
               'password_usuario' => $passwordHash,
+              'verification_token' => $verification_token,
               'email_usuario' => $email,
               'id_rol' => $id_rol,
               'fyh_creacion' => date('Y-m-d H:i:s'),
@@ -71,11 +73,11 @@ class UsuarioController extends Controller
         ) {
             \Lib\Alert::success('Usuario creado', 'El usuario se creo correctamente');
             header("Location:" . APP_URL . "usuarios");
-            exit;
+            exit();
         }else{
             \Lib\Alert::error('Error', 'El usuario no se pudo crear en la base de datos');
             header("Location:" . APP_URL . "usuarios");
-            exit;
+            exit();
         }
     }
 
@@ -86,7 +88,7 @@ class UsuarioController extends Controller
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             \Lib\Alert::info('Error', 'Acceso Denegado');
             header("Location:" . APP_URL . "usuarios");
-            exit;
+            exit();
         }
 
         // Obtener datos
@@ -100,7 +102,7 @@ class UsuarioController extends Controller
         if(empty($id_usuario) || empty($nombre_usuario) || empty($email_usuario) || empty($id_rol)) {
             \Lib\Alert::error('Error', 'Todos los campos son obligatorios');
             header("Location:" . APP_URL . "usuarios");
-            exit;
+            exit();
         }
 
         //Actualicar en la base de datos
@@ -120,7 +122,7 @@ class UsuarioController extends Controller
             \Lib\Alert::error('Error', 'El usuario no se pudo actualizar en la base de datos');
         }
         header("Location:" . APP_URL . "usuarios");
-        exit;
+        exit();
     }
 
     public function delete($id)
@@ -130,7 +132,7 @@ class UsuarioController extends Controller
         if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($id)) {
             \Lib\Alert::error('Error', 'Acceso Denegado');
             header("Location:" . APP_URL . "ususarios");
-            exit;
+            exit();
         }
 
         try {
@@ -157,6 +159,6 @@ class UsuarioController extends Controller
             \Lib\Alert::error('Error', $e->getMessage());
         }
         header("Location:" . APP_URL . "usuarios");
-        exit;
+        exit();
     }
 }

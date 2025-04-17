@@ -12,7 +12,7 @@ namespace App\Controllers;
 use App\Models\Usuario;
 use Exception;
 use Lib\Alert;
-
+use Lib\Mailer;
 
 class LoginController extends Controller
 {
@@ -58,6 +58,16 @@ class LoginController extends Controller
         $email = filter_var($_POST['email_usuario'] ?? '', FILTER_SANITIZE_EMAIL);
 
         $usuario = $this->usuarioModel->getByEmail($email);
+        if (!$usuario) {
+            Alert::error('Error', 'El usuario no existe');
+            header("Location:" . APP_URL . "login");
+            exit();
+        }
+        if($usuario['estado'] != 1) {
+            Alert::error('Error', 'El usuario se encuentra inactivo');
+            header("Location:" . APP_URL . "login");
+            exit();
+        }
 
         if (password_verify($password_usuario, $usuario['password_usuario'])) {
             session_start();
@@ -66,11 +76,13 @@ class LoginController extends Controller
             $_SESSION['nombre'] = $usuario['nombre_usuario'];
             $_SESSION['rol'] = $usuario['id_rol'];
             header("Location:" . APP_URL);
+            exit();
         } else {
             session_start();
             $_SESSION['email'] = $email;
             Alert::error('Error', 'Credenciales incorrectas');
             header("Location:" . APP_URL . "login");
+            exit();
         }
     }
 
@@ -90,6 +102,7 @@ class LoginController extends Controller
         $email_usuario= filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
         $password_usuario = $_POST['password'];
         $password_confirm = $_POST['password_confirm'];
+        $verification_token = bin2hex(random_bytes(50));
         $terms = $_POST['terms'];
         $fyh_creacion = date('Y-m-d H:i:s');
 
@@ -101,15 +114,24 @@ class LoginController extends Controller
             if ($password_usuario !== $password_confirm) {
                 throw new Exception("Las contraseñas no coinciden", 1);
             }
+            $mailer = new Mailer();
+            $data = [
+              'nombre' => $nombre,
+              'link' => APP_URL . "verify/" . $verification_token
+            ];
+            $mail = $mailer->sendTemplate($email_usuario, "Activación de cuenta", '../resources/templates/confirm.php', $data);
+            var_dump($mail);
+            die();
 
             if($this->usuarioModel->create(
                 [
                 'nombre_usuario' => $nombre,
                 'email_usuario' => $email_usuario,
                 'password_usuario' => password_hash($password_usuario, PASSWORD_DEFAULT),
+                'verification_token' => $verification_token,
                 'id_rol' => 2,
                 'fyh_creacion' => $fyh_creacion,
-                'estado' =>'1',
+                'estado' =>'0',
                 ]
             )
             ) {

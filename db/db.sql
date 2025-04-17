@@ -26,6 +26,7 @@ CREATE TABLE usuarios (
   id_usuario INT (11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
   nombre_usuario VARCHAR (255) NOT NULL UNIQUE KEY,
   id_rol INT NOT NULL ,
+  verification_token VARCHAR(255),
   email_usuario VARCHAR(255) NOT NULL UNIQUE KEY,
   password_usuario TEXT NOT NULL,
 

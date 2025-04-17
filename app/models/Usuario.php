@@ -15,7 +15,7 @@ class Usuario extends Conexion
             $stmt = $this->getConexion()->query("SELECT u.id_usuario, u.nombre_usuario,r.nombre_rol,u.email_usuario,u.fyh_creacion,u.estado FROM {$this->table} u JOIN roles r ON r.id_rol = u.id_rol");
             return $stmt->fetchAll(\PDO::FETCH_ASSOC);
         } catch (\Throwable $th) {
-            return [];
+            return null;
         }
     }
 
@@ -25,7 +25,7 @@ class Usuario extends Conexion
             $stmt = $this->getConexion()->query("SELECT u.nombre_usuario,r.nombre_rol,u.email_usuario,u.fyh_creacion,u.estado FROM {$this->table} u JOIN roles r ON r.id_rol = u.id_rol WHERE u.id_usuario = {$id}");
             return $stmt->fetchAll(\PDO::FETCH_ASSOC);
         } catch (\Throwable $th) {
-            return [];
+            return null;
         }
     }
 
@@ -36,7 +36,7 @@ class Usuario extends Conexion
             $stmt->execute([':email' => $email]);
             return $stmt->fetch(\PDO::FETCH_ASSOC) ?: null; // Devuelve null si no existe
         } catch (\Throwable $th) {
-            return [];
+            return null;
         }
     }
 
@@ -45,13 +45,14 @@ class Usuario extends Conexion
         try {
             $stmt= $this->getConexion()->prepare(
                 "INSERT INTO {$this->table} 
-        (nombre_usuario, password_usuario, email_usuario, id_rol, fyh_creacion,estado) 
-        VALUES (:nombre, :password, :email, :rol, :fyh_creacion, :estado)"
+        (nombre_usuario, password_usuario, verification_token, email_usuario, id_rol, fyh_creacion,estado) 
+        VALUES (:nombre, :password,:verification_token, :email, :rol, :fyh_creacion, :estado)"
             );
             $stmt->execute(
                 [
                 'nombre' => $data['nombre_usuario'],
                 'password' => $data['password_usuario'],
+                'verification_token' => $data['verification_token'],
                 'email' => $data['email_usuario'],
                 'rol' => $data['id_rol'],
                 'fyh_creacion' => $data['fyh_creacion'],
