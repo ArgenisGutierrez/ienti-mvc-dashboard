@@ -49,43 +49,23 @@ if(!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
 
   <!-- Login box start -->
   <div class="container" style="z-index: 1;">
-    <form action="<?php echo APP_URL;?>login" autocomplete="off" class="needs-validation" method="post" novalidate>
+    <form action="<?php echo APP_URL;?>forgetPassword" autocomplete="off" class="needs-validation" method="post" novalidate>
       <div class="login-box rounded-2 p-5">
         <div class="login-form">
           <a href="https://www.ienti.com.mx" class="login-logo mb-3">
             <img src="images/logo.webp" alt="Logo ienti & manwere" />
           </a>
-          <h5 class="fw-light mb-5">Inicia Sesión para acceder</h5>
+          <h5 class="fw-light mb-5">Recuperación de contraseña</h5>
           <div class="mb-3">
             <label class="form-label">Correo</label>
-            <input id="email_usuario" name="email_usuario" type="text" class="form-control"
-              placeholder="Ingresa tu correo" value="<?php echo $old_email ?>" required />
-          </div>
-          <div class="mb-3 position-relative">
-            <label class="form-label">Contraseña</label>
-            <div class="input-group">
-              <input id="password_usuario" name="password_usuario" type="password" class="form-control"
-                placeholder="Ingresa tu contraseña" required />
-              <button type="button"
-                class="btn btn-link text-decoration-none position-absolute end-0 top-50 translate-middle-y"
-                onclick="togglePasswordVisibility()" style="z-index: 5;">
-                <i id="eyeIcon" class="bi bi-eye-slash"></i>
-              </button>
-            </div>
-          </div>
-          <div class="d-flex align-items-center justify-content-between">
-          <a href="<?php echo APP_URL;?>forgetPassword" class="text-blue text-decoration-underline">Olvidaste tu contraseña?</a>
+            <input id="email_usuario" name="email_usuario" type="email" class="form-control"
+              placeholder="Ingresa tu correo" required />
           </div>
           <div class="d-grid py-3">
             <button type="submit" class="btn btn-primary" value="add" name="action">
-              Iniciar Sesión
+              Recuperar mi contraseña
             </button>
           </div>
-        </div>
-        <div class="text-center pt-3">
-          <span>No tienes cuenta?</span>
-          <a href="<?php echo APP_URL;?>registro" class="text-blue text-decoration-underline ms-2">
-            Crear Cuenta</a>
         </div>
       </div>
     </form>
@@ -99,22 +79,6 @@ if(!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
   <!-- Particles JS -->
   <script src="vendor/particles/particles.min.js"></script>
   <script src="vendor/particles/particles-custom.js"></script>
-  <script>
-    function togglePasswordVisibility() {
-      const passwordInput = document.getElementById('password_usuario');
-      const eyeIcon = document.getElementById('eyeIcon');
-
-      if (passwordInput.type === 'password') {
-        passwordInput.type = 'text';
-        eyeIcon.classList.remove('bi-eye-slash');
-        eyeIcon.classList.add('bi-eye');
-      } else {
-        passwordInput.type = 'password';
-        eyeIcon.classList.remove('bi-eye');
-        eyeIcon.classList.add('bi-eye-slash');
-      }
-    }
-  </script>
 </body>
 
 </html>

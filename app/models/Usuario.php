@@ -62,6 +62,23 @@ class Usuario extends Conexion
         }
     }
 
+    public function changePassword($data)
+    {
+        try {
+            $stmt = $this->getConexion()->prepare("UPDATE {$this->table} SET password_usuario = :password,verification_token=:token WHERE id_usuario = :id");
+            $stmt->execute(
+                [
+                'password' => $data['password_usuario'], 
+                'id' => $data['id_usuario'],
+                'token' => $data['token']
+                ]
+            );
+            return true;
+        } catch (\Throwable $th) {
+            return false;
+        }
+    }
+
     public function create($data)
     {
         try {

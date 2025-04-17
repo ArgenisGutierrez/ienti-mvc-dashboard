@@ -47,6 +47,16 @@ class LoginController extends Controller
         return $this->view('registro');
     }
 
+    public function forgetPassword()
+    {
+        return $this->view('forgetPassword');
+    }
+
+    public function formChangePassword($token)
+    {
+        return $this->view('changePassword', ['token'=>$token]);
+    }
+
     /**
      * Logica de login
      *
@@ -168,6 +178,56 @@ class LoginController extends Controller
         }else {
             Alert::error('Error al verificar la cuenta', 'Error al verificar la cuenta en la db');
             header("Location:" . APP_URL . "login");
+            exit();
+        }
+    }
+
+    public function comprobacionCorreo()
+    {
+        $email_usuario=$_POST['email_usuario'];
+        $usuario = $this->usuarioModel->getByEmail($email_usuario);
+        if(!$usuario) {
+            Alert::error('Error', 'El correo no existe');
+            header("Location:" . APP_URL . "forgetPassword");
+            exit();
+        }
+        $mailer = new Mailer();
+        $datos=[
+          'nombre' => $usuario['nombre_usuario'],
+          'link' => APP_URL . "changePassword/" . $usuario['verification_token']
+        ];
+        $mail= $mailer->sendTemplate($email_usuario, "Cambio de contraseña", '../resources/templates/change.php', $datos);
+        Alert::info('Correo enviado', 'Revisa tu correo para cambiar tu contraseña');
+        header("Location:" . APP_URL . "login");
+        exit();
+    }
+
+    public function changePassword()
+    {
+        $password = $_POST['password'];
+        $password_confirm = $_POST['password_confirm'];
+        if($password !== $password_confirm) {
+            Alert::error('Error', 'Las contraseñas no coinciden');
+            header("Location:" . APP_URL . "changePassword/" . $_POST['token']);
+            exit();
+        }
+        $password = password_hash($password, PASSWORD_DEFAULT);
+        $usuario = $this->usuarioModel->getByToken($_POST['token']);
+        $token = bin2hex(random_bytes(50));
+        if($this->usuarioModel->changePassword(
+            [
+            'password_usuario'=>$password,
+            'id_usuario'=>$usuario['id_usuario'],
+            'token'=>$token
+            ]
+        )
+        ) {
+            Alert::success('Exito', 'Contraseña cambiada con exito');
+            header("Location:" . APP_URL . "login");
+            exit();
+        }else {
+            Alert::error('Error', 'Error al cambiar la contraseña en la db');
+            header("Location:" . APP_URL . "changePassword/" . $_POST['token']);
             exit();
         }
     }

@@ -19,6 +19,10 @@ Route::post('/login', [LoginController::class,'login']);
 Route::get('/registro', [LoginController::class,'registro']);
 Route::post('/registro', [LoginController::class,'registrarse']);
 Route::get('/verify/:token', [LoginController::class,'verificar']);
+Route::get('/forgetPassword', [LoginController::class,'forgetPassword']);
+Route::post('/forgetPassword', [LoginController::class,'comprobacionCorreo']);
+Route::get('/changePassword/:token', [LoginController::class,'formChangePassword']);
+Route::post('/changePassword', [LoginController::class,'changePassword']);
 
 Route::get('/404', [HomeController::class,'error404']);
 Route::get('/', [HomeController::class,'index']);
