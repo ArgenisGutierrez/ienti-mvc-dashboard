@@ -120,8 +120,11 @@ class LoginController extends Controller
               'link' => APP_URL . "verify/" . $verification_token
             ];
             $mail = $mailer->sendTemplate($email_usuario, "Activación de cuenta", '../resources/templates/confirm.php', $data);
-            var_dump($mail);
-            die();
+            if (!$mail) {
+                Alert::error('Error', 'Error al enviar el correo');
+                header("Location:" . APP_URL . "registro");
+                exit();
+            }
 
             if($this->usuarioModel->create(
                 [
@@ -135,7 +138,7 @@ class LoginController extends Controller
                 ]
             )
             ) {
-                Alert::success('Exito', 'Registro exitoso');
+                Alert::success('Exito', 'Registro exitoso, revisa tu correo para activar tu cuenta');
                 header("Location:" . APP_URL . "login");
                 exit();
             }else {
@@ -144,6 +147,27 @@ class LoginController extends Controller
         } catch (Exception $e) {
             Alert::error('Error', $e->getMessage());
             header("Location:" . APP_URL . "registro");
+            exit();
+        }
+    }
+
+    public function verificar($token)
+    {
+        $usuario = $this->usuarioModel->getByToken($token);
+        if($usuario['estado'] == 1) {
+            Alert::info('Cuenta ya verificada', 'La cuenta ya ha sido verificada anteriormente');
+            header("Location:" . APP_URL . "login");
+            exit();
+        }
+
+        if($this->usuarioModel->verifyUser($usuario['id_usuario'])
+        ) {
+            Alert::success('Cuenta verificada', 'La cuenta ha sido verificada con exito');
+            header("Location:" . APP_URL . "login");
+            exit();
+        }else {
+            Alert::error('Error al verificar la cuenta', 'Error al verificar la cuenta en la db');
+            header("Location:" . APP_URL . "login");
             exit();
         }
     }

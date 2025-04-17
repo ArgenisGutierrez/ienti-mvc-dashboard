@@ -40,6 +40,28 @@ class Usuario extends Conexion
         }
     }
 
+    public function getByToken($token)
+    {
+        try {
+            $stmt = $this->getConexion()->prepare("SELECT id_usuario,estado FROM {$this->table} WHERE verification_token = :token");
+            $stmt->execute([':token' => $token]);
+            return $stmt->fetch(\PDO::FETCH_ASSOC) ?: null; // Devuelve null si no existe
+        } catch (\Throwable $th) {
+            return null;
+        }
+    }
+
+    public function verifyUser($id)
+    {
+        try {
+            $stmt = $this->getConexion()->prepare("UPDATE {$this->table} SET estado = 1 WHERE id_usuario = :id");
+            $stmt->execute(['id' => $id]);
+            return true;
+        } catch (\Throwable $th) {
+            return false;
+        }
+    }
+
     public function create($data)
     {
         try {

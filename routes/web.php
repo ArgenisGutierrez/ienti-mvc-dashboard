@@ -12,12 +12,13 @@ use App\Controllers\RecursoController;
 use App\Controllers\UsuarioController;
 use App\Controllers\LoginController;
 
-/*----- Rutas de login ------*/
+/*----- Rutas de login y registro------*/
 Route::get('/login', [LoginController::class,'index']);
 Route::get('/logout', [LoginController::class,'logout']);
 Route::post('/login', [LoginController::class,'login']);
 Route::get('/registro', [LoginController::class,'registro']);
 Route::post('/registro', [LoginController::class,'registrarse']);
+Route::get('/verify/:token', [LoginController::class,'verificar']);
 
 Route::get('/404', [HomeController::class,'error404']);
 Route::get('/', [HomeController::class,'index']);
