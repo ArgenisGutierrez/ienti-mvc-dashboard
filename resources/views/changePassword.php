@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
   <!-- Meta -->
-  <link rel="shortcut icon" href="images/icon.ico" />
+  <link rel="shortcut icon" href="<?php echo APP_URL;?>images/icon.ico" />
 
   <!-- Title -->
   <title>
@@ -18,18 +18,18 @@
             ************ Common Css Files *************
         ************ -->
   <!-- Bootstrap css -->
-  <link rel="stylesheet" href="css/bootstrap.min.css" />
+  <link rel="stylesheet" href="<?php echo APP_URL;?>css/bootstrap.min.css" />
 
   <!-- Bootstrap font icons css -->
-  <link rel="stylesheet" href="fonts/bootstrap/bootstrap-icons.css" />
+  <link rel="stylesheet" href="<?php echo APP_URL;?>fonts/bootstrap/bootstrap-icons.css" />
 
   <!-- Main css -->
-  <link rel="stylesheet" href="css/main.min.css" />
+  <link rel="stylesheet" href="<?php echo APP_URL;?>css/main.min.css" />
 
   <!-- Login css -->
-  <link rel="stylesheet" href="css/login.css" />
+  <link rel="stylesheet" href="<?php echo APP_URL;?>css/login.css" />
   <!-- Particles CSS -->
-  <link rel="stylesheet" href="vendor/particles/particles.css" />
+  <link rel="stylesheet" href="<?php echo APP_URL;?>vendor/particles/particles.css" />
 </head>
 
 <body class="login-container">
@@ -41,7 +41,7 @@
       <div class="login-box rounded-2 p-5">
         <div class="login-form">
           <a href="<?php echo APP_URL;?>" class="login-logo mb-3">
-            <img src="images/logo.webp" alt="ienti & manwere" />
+          <img src="<?php echo APP_URL;?>images/logo.webp" alt="ienti & manwere" />
           </a>
           <h5 class="fw-light mb-5">Introduce tu nueva contraseña</h5>
           <div class="mb-3">
@@ -88,12 +88,12 @@
   </div>
   <!-- Login box end -->
   <!-- validations -->
-  <script src="js/validations.js"></script>
+<script src="<?php echo APP_URL;?>js/validations.js"></script>
   <!-- sweetalert2 -->
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <!-- Particles JS -->
-  <script src="vendor/particles/particles.min.js"></script>
-  <script src="vendor/particles/particles-custom.js"></script>
+<script src="<?php echo APP_URL;?>vendor/particles/particles.min.js"></script>
+<script src="<?php echo APP_URL;?>vendor/particles/particles-custom.js"></script>
   <script>
     document.getElementById('registerForm').addEventListener('submit', function (e) {
       const pass1 = document.getElementById('password').value;

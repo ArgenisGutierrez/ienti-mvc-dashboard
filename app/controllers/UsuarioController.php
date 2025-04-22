@@ -26,6 +26,14 @@ class UsuarioController extends Controller
         );
     }
 
+    public function perfil()
+    {
+        session_start();
+        $usuarioModel = new Usuario();
+        $usuario = $usuarioModel->getUsuario($_SESSION['usuario_id']);
+        return $this->view('perfil', ['usuario'=>$usuario[0]]);
+    }
+
     public function create()
     {
         $usuarioModel= new Usuario();
@@ -161,4 +169,52 @@ class UsuarioController extends Controller
         header("Location:" . APP_URL . "usuarios");
         exit();
     }
+
+    public function updatePerfil($id)
+    {
+        $usuarioModel = new Usuario();
+        // Verificar método POST
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            \Lib\Alert::info('Error', 'Acceso Denegado');
+            header("Location:" . APP_URL . "usuarios");
+            exit();
+        }
+
+        // Obtener datos
+        $id_usuario = $id ?? null;
+        $nombre_usuario = trim($_POST['nombre_usuario'] ?? '');
+        $email_usuario = trim($_POST['email_usuario'] ?? '');
+        $id_rol = $_POST['id_rol'] ?? null;
+        $estado = $_POST['estado'] ?? null;
+
+        // Validaciones
+        if(empty($id_usuario) || empty($nombre_usuario) || empty($email_usuario) || empty($id_rol)) {
+            \Lib\Alert::error('Error', 'Todos los campos son obligatorios');
+            header("Location:" . APP_URL . "usuarios");
+            exit();
+        }
+
+        //Actualicar en la base de datos
+        if($usuarioModel->update(
+            [
+            'id_usuario' => $id_usuario,
+            'nombre_usuario' => $nombre_usuario,
+            'email_usuario' => $email_usuario,
+            'id_rol' => $id_rol,
+            'fyh_modificacion' => date('Y-m-d H:i:s'),
+            'estado' => $estado
+            ]
+        )
+        ) {
+            \Lib\Alert::success('Usuario actualizado', 'El usuario se actualizo correctamente');
+            session_start();
+            $_SESSION['email'] = $email_usuario;
+            $_SESSION['nombre'] = $nombre_usuario;
+        }else {
+            \Lib\Alert::error('Error', 'El usuario no se pudo actualizar en la base de datos');
+        }
+        header("Location:" . APP_URL . "usuario");
+        exit();
+    }
+
 }

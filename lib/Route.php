@@ -37,41 +37,72 @@ class Route
     /*------ Ejecucion de rutas ------*/
     public static function dispatch()
     {
-        $uri = $_SERVER['REQUEST_URI'];
+        // Obtener la URI sin query strings
+        $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         $uri = trim($uri, '/');
+
         $method = $_SERVER['REQUEST_METHOD'];
 
-        // Soporte para método spoofing (PUT/DELETE desde formularios)
+        // Verificar si es un archivo estático
+        if (preg_match('/\.(css|js|png|jpg|jpeg|gif|ico)$/', $uri)) {
+            return false;
+        }
+
+        // Verificar si la URI es un archivo físico (usando la ruta limpia)
+        $publicPath = realpath($_SERVER['DOCUMENT_ROOT'] . '/' . $uri);
+        if ($publicPath !== false && is_file($publicPath)) {
+            return false;
+        }
+        $uri = trim($_SERVER['REQUEST_URI'], '/');
+        $method = $_SERVER['REQUEST_METHOD'];
+
+        // Verificar si es un archivo estático
+        if (preg_match('/\.(css|js|png|jpg|jpeg|gif|ico)$/', $uri)) {
+            return false;
+        }
+
+        // Verificar si la URI es un archivo físico
+        $publicPath = realpath($_SERVER['DOCUMENT_ROOT'] . '/' . $uri);
+        if ($publicPath !== false && is_file($publicPath)) {
+            return false;
+        }
+
+        // Soporte para método spoofing
         if ($method === 'POST' && isset($_POST['_method'])) {
             $method = strtoupper($_POST['_method']);
         }
 
-        foreach (self::$routes[$method] as $route => $callback) {
+        // Validar si el método existe en las rutas
+        if (!isset(self::$routes[$method])) {
+            header("Location: " . APP_URL . "404");
+            return;
+        }
 
-            // Mejora la expresión regular para capturar números y otros caracteres
+        foreach (self::$routes[$method] as $route => $callback) {
             if (strpos($route, ':') !== false) {
                 $route = preg_replace('#:([\w-]+)#', '([^/]+)', $route);
             }
 
             if (preg_match("#^$route$#", $uri, $matches)) {
                 $params = array_slice($matches, 1);
-                if(is_callable($callback)) {
+
+                if (is_callable($callback)) {
                     $response = $callback(...$params);
-                }
-                if(is_array($callback)) {
+                } elseif (is_array($callback)) {
                     $controller = new $callback[0];
                     $response = $controller->{$callback[1]}(...$params);
                 }
-                if (is_array($response || is_object($response))) {
+
+                // Respuesta corregida (condición completa)
+                if (is_array($response) || is_object($response)) {
                     header('Content-Type: application/json');
                     echo json_encode($response);
-                }else{
+                } else {
                     echo $response;
                 }
                 return;
             }
         }
-        //retornar vista 404
-        header("Location:".APP_URL."404");
+        header("Location: " . APP_URL . "404");
     }
 }

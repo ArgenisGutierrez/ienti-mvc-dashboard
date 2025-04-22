@@ -1,9 +1,13 @@
 Options -MultiViews
 RewriteEngine On
 
+# Excluir archivos estáticos (CSS, JS, imágenes) incluso con query strings
+RewriteCond %{REQUEST_URI} \.(css|js|png|jpg|jpeg|gif|ico)$ [NC]
+RewriteRule ^ - [L]
+
 # Si la solicitud NO es para un archivo existente
 RewriteCond %{REQUEST_FILENAME} !-f
 # Si la solicitud NO es para un directorio existente
 RewriteCond %{REQUEST_FILENAME} !-d
 # Redirige todo a index.php
-RewriteRule ^ index.php [QSA,L]
+RewriteRule ^(.*)$ index.php [QSA,L]

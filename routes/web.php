@@ -45,4 +45,7 @@ Route::post('/usuarios', [UsuarioController::class,'create']);
 Route::put('/usuarios/:id', [UsuarioController::class,'update']);
 Route::delete('/usuarios/:id', [UsuarioController::class,'delete']);
 
+Route::get('/usuario', [UsuarioController::class,'perfil']);
+Route::put('/usuario/:id', [UsuarioController::class,'updatePerfil']);
+
 Route::dispatch();

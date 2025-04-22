@@ -22,7 +22,7 @@ class Usuario extends Conexion
     public function getUsuario($id)
     {
         try {
-            $stmt = $this->getConexion()->query("SELECT u.nombre_usuario,r.nombre_rol,u.email_usuario,u.fyh_creacion,u.estado FROM {$this->table} u JOIN roles r ON r.id_rol = u.id_rol WHERE u.id_usuario = {$id}");
+            $stmt = $this->getConexion()->query("SELECT u.id_usuario, u.id_rol,u.nombre_usuario,r.nombre_rol,u.email_usuario,u.fyh_creacion,u.estado FROM {$this->table} u JOIN roles r ON r.id_rol = u.id_rol WHERE u.id_usuario = {$id}");
             return $stmt->fetchAll(\PDO::FETCH_ASSOC);
         } catch (\Throwable $th) {
             return null;

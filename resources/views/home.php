@@ -151,6 +151,10 @@ if(!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
   <script src="vendor/newsticker/newsTicker.min.js"></script>
   <script src="vendor/newsticker/custom-newsTicker.js"></script>
 
+  <!-- sweetalert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <?php Lib\Alert::display();?>
+
   <!-- Apex Charts -->
   <script src="vendor/apex/apexcharts.min.js"></script>
   <script src="vendor/apex/custom/dash1/analytics.js"></script>
