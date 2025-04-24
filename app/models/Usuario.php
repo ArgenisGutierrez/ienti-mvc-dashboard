@@ -22,8 +22,8 @@ class Usuario extends Conexion
     public function getUsuario($id)
     {
         try {
-            $stmt = $this->getConexion()->query("SELECT u.id_usuario, u.id_rol,u.nombre_usuario,r.nombre_rol,u.email_usuario,u.fyh_creacion,u.estado FROM {$this->table} u JOIN roles r ON r.id_rol = u.id_rol WHERE u.id_usuario = {$id}");
-            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            $stmt = $this->getConexion()->query("SELECT u.id_usuario, u.id_rol,u.nombre_usuario,r.nombre_rol,u.email_usuario,u.imagen_usuario,u.fyh_creacion,u.estado FROM {$this->table} u JOIN roles r ON r.id_rol = u.id_rol WHERE u.id_usuario = {$id}");
+            return $stmt->fetch(\PDO::FETCH_ASSOC) ?: null;
         } catch (\Throwable $th) {
             return null;
         }
@@ -113,6 +113,7 @@ class Usuario extends Conexion
             email_usuario = :email,
             id_rol = :rol,
             estado = :estado,
+            imagen_usuario =:imagen_usuario,
             fyh_modificacion = :fecha
         WHERE id_usuario = :id"
             );
@@ -122,6 +123,7 @@ class Usuario extends Conexion
                 ':email' => $data['email_usuario'],
                 ':rol' => $data['id_rol'],
                 ':estado' => $data['estado'],
+                ':imagen_usuario' => $data['imagen_usuario'],
                 ':fecha' => $data['fyh_modificacion'],
                 ':id' => $data['id_usuario']
                 ]
@@ -152,5 +154,16 @@ class Usuario extends Conexion
         );
         $stmt->execute();
         return $stmt->fetchColumn();
+    }
+
+    public function changeImage($datos)
+    {
+        try {
+            $stmt = $this->getConexion()->prepare("UPDATE {$this->table} SET imagen_usuario = :imagen WHERE id_usuario = :id");
+            $stmt->execute(['imagen' => $datos['imagen_usuario'], 'id' => $datos['id_usuario']]);
+            return true;
+        } catch (\Throwable $th) {
+            return false;
+        }
     }
 }

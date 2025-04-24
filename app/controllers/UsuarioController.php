@@ -31,7 +31,7 @@ class UsuarioController extends Controller
         session_start();
         $usuarioModel = new Usuario();
         $usuario = $usuarioModel->getUsuario($_SESSION['usuario_id']);
-        return $this->view('perfil', ['usuario'=>$usuario[0]]);
+        return $this->view('perfil', ['usuario'=>$usuario]);
     }
 
     public function create()
@@ -69,13 +69,13 @@ class UsuarioController extends Controller
         $verification_token = bin2hex(random_bytes(50));
         if($usuarioModel->create(
             [
-              'nombre_usuario' => $nombre,
-              'password_usuario' => $passwordHash,
-              'verification_token' => $verification_token,
-              'email_usuario' => $email,
-              'id_rol' => $id_rol,
-              'fyh_creacion' => date('Y-m-d H:i:s'),
-              'estado'=>'1'
+            'nombre_usuario' => $nombre,
+            'password_usuario' => $passwordHash,
+            'verification_token' => $verification_token,
+            'email_usuario' => $email,
+            'id_rol' => $id_rol,
+            'fyh_creacion' => date('Y-m-d H:i:s'),
+            'estado'=>'1'
             ]
         )
         ) {
@@ -116,12 +116,12 @@ class UsuarioController extends Controller
         //Actualicar en la base de datos
         if($usuarioModel->update(
             [
-              'id_usuario' => $id_usuario,
-              'nombre_usuario' => $nombre_usuario,
-              'email_usuario' => $email_usuario,
-              'id_rol' => $id_rol,
-              'fyh_modificacion' => date('Y-m-d H:i:s'),
-              'estado' => $estado
+            'id_usuario' => $id_usuario,
+            'nombre_usuario' => $nombre_usuario,
+            'email_usuario' => $email_usuario,
+            'id_rol' => $id_rol,
+            'fyh_modificacion' => date('Y-m-d H:i:s'),
+            'estado' => $estado
             ]
         )
         ) {
@@ -166,7 +166,7 @@ class UsuarioController extends Controller
         } catch (Exception $e) {
             \Lib\Alert::error('Error', $e->getMessage());
         }
-        header("Location:" . APP_URL . "usuarios");
+        header("Location:" . APP_URL . "usuario");
         exit();
     }
 
@@ -176,7 +176,7 @@ class UsuarioController extends Controller
         // Verificar método POST
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             \Lib\Alert::info('Error', 'Acceso Denegado');
-            header("Location:" . APP_URL . "usuarios");
+            header("Location:" . APP_URL . "usuario");
             exit();
         }
 
@@ -190,7 +190,7 @@ class UsuarioController extends Controller
         // Validaciones
         if(empty($id_usuario) || empty($nombre_usuario) || empty($email_usuario) || empty($id_rol)) {
             \Lib\Alert::error('Error', 'Todos los campos son obligatorios');
-            header("Location:" . APP_URL . "usuarios");
+            header("Location:" . APP_URL . "usuario");
             exit();
         }
 
@@ -217,4 +217,58 @@ class UsuarioController extends Controller
         exit();
     }
 
+    public function updateProfileImage()
+    {
+        //1.verificar metodo POST
+        if($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            \Lib\Alert::info('Error', 'Acceso Denegado');
+            header("Location:" . APP_URL . "usuario");
+            exit();
+        }
+
+        //2.verificar datos requeridos
+        $id_usuario = $_POST['id_usuario'] ?? null;
+        $imagen_usuario = $_FILES['imagen_usuario'] ?? null;
+        if(empty($id_usuario) || empty($imagen_usuario)) {
+            \Lib\Alert::error('Error', 'Todos los campos son obligatorios');
+            header("Location:" . APP_URL . "usuario");
+            exit();
+        }
+
+        //3.Eliminar imagen antigua si existe
+        $usuarioModel = new Usuario();
+        $data = $usuarioModel->getUsuario($id_usuario);
+        $imagenAntigua = $data['imagen_usuario'];
+        if(file_exists($_SERVER['DOCUMENT_ROOT'] .'/files/'.$imagenAntigua)) {
+            unlink($_SERVER['DOCUMENT_ROOT'] .'/files/'.$imagenAntigua);
+        }
+
+        //4.Subir la nueva imagen
+        $nombreArchivo = uniqid().basename($imagen_usuario['name']);
+        $rutaDestino = $_SERVER['DOCUMENT_ROOT'].'/files/'.$nombreArchivo;
+        if(!move_uploaded_file($imagen_usuario['tmp_name'], $rutaDestino)) {
+            \Lib\Alert::error('Error', 'Error al subir la imagen');
+            header("Location:" . APP_URL . "usuario");
+            exit();
+        }
+
+        //5.Actualicar la base de datos
+        if($usuarioModel->changeImage(
+            [
+                'id_usuario' => $id_usuario,
+                'imagen_usuario' => $nombreArchivo,
+            ]
+        )
+        ) {
+            session_start();
+            $_SESSION['imagen'] = $nombreArchivo;
+            \Lib\Alert::success('Imagen actualizada', 'La imagen se actualizo correctamente');
+            header("Location:" . APP_URL . "usuario");
+            exit();
+        }else {
+            \Lib\Alert::error('Error', 'La imagen no se pudo actualizar en la base de datos');
+            header("Location:" . APP_URL . "usuario");
+            exit();
+        }
+    }
 }

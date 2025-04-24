@@ -47,5 +47,6 @@ Route::delete('/usuarios/:id', [UsuarioController::class,'delete']);
 
 Route::get('/usuario', [UsuarioController::class,'perfil']);
 Route::put('/usuario/:id', [UsuarioController::class,'updatePerfil']);
+Route::put('/updateProfileImage', [UsuarioController::class,'updateProfileImage']);
 
 Route::dispatch();
