@@ -4,7 +4,7 @@
               <i class="bi bi-house"></i>
             </div>
             <div class="page-title d-none d-md-block">
-            <h5>Welcome back, <?php echo $_SESSION['nombre']?>
+            <h5>Bienvenido <?php echo $_SESSION['nombre']?>
               </h5>
             </div>
           </div>

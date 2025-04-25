@@ -1,274 +1,431 @@
 <?php
 /**
- * Controlador para la gestión de usuarios
+ * Controlador para la gestión integral de usuarios
  * 
- * Maneja las operaciones CRUD para los usuarios del sistema incluyendo:
- * - Listado de usuarios
- * - Obtención de datos de un usuario
- * - Creación de nuevos usuarios
- * - Actualización de usuarios existentes
- * - Eliminación de usuarios
+ * Maneja operaciones CRUD, gestión de perfiles y actualización de imágenes,
+ * incluyendo validaciones de seguridad y flujos de trabajo específicos.
  */
-
 namespace App\Controllers;
+
 use App\Models\Usuario;
 use App\Models\Role;
 use Exception;
+use Lib\Alert;
 
 class UsuarioController extends Controller
 {
+    /**
+     * @var Usuario Modelo de usuarios
+     */
+    protected $usuarioModel;
+    
+    /**
+     * @var Role Modelo de roles
+     */
+    protected $roleModel;
+    
+    /**
+     * @var string Directorio de subida de imágenes
+     */
+    protected $uploadDir;
+
+    public function __construct()
+    {
+        $this->usuarioModel = new Usuario();
+        $this->roleModel = new Role();
+        $this->uploadDir = $_SERVER['DOCUMENT_ROOT'] . '/files/';
+        $this->ensureUploadDirExists();
+    }
+
+    /**
+     * Muestra el listado de usuarios con sus roles
+     *
+     * @return Response Vista de usuarios
+     */
     public function index()
     {
-        $usuarioModel = new Usuario();
-        $roleModel = new Role();
         return $this->view(
-            'usuarios', ['usuarios'=>$usuarioModel->getAllUsuarios(),'roles'=>$roleModel->getAllRoles()]
+            'usuarios', [
+            'usuarios' => $this->usuarioModel->getAllUsuarios(),
+            'roles' => $this->roleModel->getAllRoles()
+            ]
         );
     }
 
+    /**
+     * Muestra el perfil del usuario actual
+     *
+     * @return Response Vista de perfil
+     */
     public function perfil()
     {
-        session_start();
-        $usuarioModel = new Usuario();
-        $usuario = $usuarioModel->getUsuario($_SESSION['usuario_id']);
-        return $this->view('perfil', ['usuario'=>$usuario]);
+        $this->startSession();
+        $usuario = $this->usuarioModel->getUsuario($_SESSION['usuario_id']);
+        return $this->view('perfil', ['usuario' => $usuario]);
     }
 
+    /**
+     * Crea un nuevo usuario en el sistema
+     *
+     * @return Redirect Redirección con resultado
+     */
     public function create()
     {
-        $usuarioModel= new Usuario();
-        // Verificar método POST
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            \Lib\Alert::info('Acceso Denegado', 'No tienes permiso para acceder a esta ruta');
-            header("Location:" . APP_URL . "usuarios");
-            exit;
-        }
-
-        // Obtener y sanitizar datos
-        $nombre = trim($_POST['nombre_usuario'] ?? '');
-        $password = $_POST['password_usuario'] ?? '';
-        $email = trim($_POST['email_usuario'] ?? '');
-        $id_rol = $_POST['id_rol'] ?? null;
-
-        // Validaciones básicas
-        if (empty($nombre) || empty($password) || empty($email) || empty($id_rol)) {
-            \Lib\Alert::error('Error', 'Todos los campos son obligatorios');
-            header("Location:" . APP_URL . "usuarios");
-            exit;
-        }
-
-        // Validar que las contraseñas coincidan (si aplica)
-        if ($_POST['password_usuario'] !== $_POST['password_usuario2']) {
-            \Lib\Alert::error('Error', 'Las contraseñas no coinciden');
-            header("Location:" . APP_URL . "ususarios");
-            exit;
-        }
-
-        // Hash de contraseña
-        $passwordHash = password_hash($password, PASSWORD_DEFAULT);
-        $verification_token = bin2hex(random_bytes(50));
-        if($usuarioModel->create(
-            [
-            'nombre_usuario' => $nombre,
-            'password_usuario' => $passwordHash,
-            'verification_token' => $verification_token,
-            'email_usuario' => $email,
-            'id_rol' => $id_rol,
-            'fyh_creacion' => date('Y-m-d H:i:s'),
-            'estado'=>'1'
-            ]
-        )
-        ) {
-            \Lib\Alert::success('Usuario creado', 'El usuario se creo correctamente');
-            header("Location:" . APP_URL . "usuarios");
-            exit();
-        }else{
-            \Lib\Alert::error('Error', 'El usuario no se pudo crear en la base de datos');
-            header("Location:" . APP_URL . "usuarios");
-            exit();
-        }
-    }
-
-    public function update($id)
-    {
-        $usuarioModel = new Usuario();
-        // Verificar método POST
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            \Lib\Alert::info('Error', 'Acceso Denegado');
-            header("Location:" . APP_URL . "usuarios");
-            exit();
-        }
-
-        // Obtener datos
-        $id_usuario = $id ?? null;
-        $nombre_usuario = trim($_POST['nombre_usuario'] ?? '');
-        $email_usuario = trim($_POST['email_usuario'] ?? '');
-        $id_rol = $_POST['id_rol'] ?? null;
-        $estado = $_POST['estado'] ?? null;
-
-        // Validaciones
-        if(empty($id_usuario) || empty($nombre_usuario) || empty($email_usuario) || empty($id_rol)) {
-            \Lib\Alert::error('Error', 'Todos los campos son obligatorios');
-            header("Location:" . APP_URL . "usuarios");
-            exit();
-        }
-
-        //Actualicar en la base de datos
-        if($usuarioModel->update(
-            [
-            'id_usuario' => $id_usuario,
-            'nombre_usuario' => $nombre_usuario,
-            'email_usuario' => $email_usuario,
-            'id_rol' => $id_rol,
-            'fyh_modificacion' => date('Y-m-d H:i:s'),
-            'estado' => $estado
-            ]
-        )
-        ) {
-            \Lib\Alert::success('Usuario actualizado', 'El usuario se actualizo correctamente');
-        }else {
-            \Lib\Alert::error('Error', 'El usuario no se pudo actualizar en la base de datos');
-        }
-        header("Location:" . APP_URL . "usuarios");
-        exit();
-    }
-
-    public function delete($id)
-    {
-        $usuarioModel = new Usuario();
-        // Verificar método POST y existencia de ID
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($id)) {
-            \Lib\Alert::error('Error', 'Acceso Denegado');
-            header("Location:" . APP_URL . "ususarios");
-            exit();
-        }
-
         try {
-            if (!$id || $id <= 0) {
-                throw new Exception("ID de usuario inválido");
-            }
-
-            // Verificar si es el último administrador
-            $adminCount = $usuarioModel->countAdmins();
-
-            $rolUsuario = $usuarioModel->getUsuario($id);
-
-            if ($rolUsuario['nombre_rol'] === 'Administrador' && $adminCount === 1) {
-                throw new Exception("No se puede eliminar al último administrador");
-            }
-
-            // Eliminar usuario
-            if($usuarioModel->delete($id)) {
-                \Lib\Alert::success('Usuario eliminado', 'El usuario se elimino correctamente');
-            }else {
-                \Lib\Alert::error('Error', 'El usuario no se pudo eliminar en la base de datos');
+            $this->validateRequestMethod('POST');
+            $data = $this->prepareUserData();
+            
+            if ($this->usuarioModel->create($data)) {
+                Alert::success('Usuario creado', 'El usuario se creó correctamente');
+            } else {
+                Alert::error('Error', 'Error al crear el usuario');
             }
         } catch (Exception $e) {
-            \Lib\Alert::error('Error', $e->getMessage());
+            Alert::error('Error', $e->getMessage());
         }
-        header("Location:" . APP_URL . "usuario");
-        exit();
+        $this->redirectToUsuarios();
     }
 
+    /**
+     * Actualiza los datos de un usuario existente
+     *
+     * @param  int $id ID del usuario
+     * @return Redirect Redirección con resultado
+     */
+    public function update($id)
+    {
+        try {
+            $this->validateRequestMethod('POST');
+            $data = $this->prepareUpdateData($id);
+            
+            if ($this->usuarioModel->update($data)) {
+                Alert::success('Usuario actualizado', 'El usuario se actualizó correctamente');
+            } else {
+                Alert::error('Error', 'Error al actualizar el usuario');
+            }
+        } catch (Exception $e) {
+            Alert::error('Error', $e->getMessage());
+        }
+        $this->redirectToUsuarios();
+    }
+
+    /**
+     * Elimina un usuario del sistema
+     *
+     * @param  int $id ID del usuario
+     * @return Redirect Redirección con resultado
+     */
+    public function delete($id)
+    {
+        try {
+            $this->validateRequestMethod('POST');
+            $this->validateAdminDeletion($id);
+            
+            if ($this->usuarioModel->delete($id)) {
+                Alert::success('Usuario eliminado', 'El usuario se eliminó correctamente');
+            } else {
+                Alert::error('Error', 'Error al eliminar el usuario');
+            }
+        } catch (Exception $e) {
+            Alert::error('Error', $e->getMessage());
+        }
+        $this->redirectToUsuarios();
+    }
+
+    /**
+     * Actualiza el perfil del usuario actual
+     *
+     * @param  int $id ID del usuario
+     * @return Redirect Redirección con resultado
+     */
     public function updatePerfil($id)
     {
-        $usuarioModel = new Usuario();
-        // Verificar método POST
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            \Lib\Alert::info('Error', 'Acceso Denegado');
-            header("Location:" . APP_URL . "usuario");
-            exit();
+        try {
+            $this->validateRequestMethod('POST');
+            $data = $this->prepareUpdateData($id);
+            
+            if ($this->usuarioModel->update($data)) {
+                $this->updateSessionData($data);
+                Alert::success('Perfil actualizado', 'Los datos se actualizaron correctamente');
+            } else {
+                Alert::error('Error', 'Error al actualizar el perfil');
+            }
+        } catch (Exception $e) {
+            Alert::error('Error', $e->getMessage());
         }
-
-        // Obtener datos
-        $id_usuario = $id ?? null;
-        $nombre_usuario = trim($_POST['nombre_usuario'] ?? '');
-        $email_usuario = trim($_POST['email_usuario'] ?? '');
-        $id_rol = $_POST['id_rol'] ?? null;
-        $estado = $_POST['estado'] ?? null;
-
-        // Validaciones
-        if(empty($id_usuario) || empty($nombre_usuario) || empty($email_usuario) || empty($id_rol)) {
-            \Lib\Alert::error('Error', 'Todos los campos son obligatorios');
-            header("Location:" . APP_URL . "usuario");
-            exit();
-        }
-
-        //Actualicar en la base de datos
-        if($usuarioModel->update(
-            [
-            'id_usuario' => $id_usuario,
-            'nombre_usuario' => $nombre_usuario,
-            'email_usuario' => $email_usuario,
-            'id_rol' => $id_rol,
-            'fyh_modificacion' => date('Y-m-d H:i:s'),
-            'estado' => $estado
-            ]
-        )
-        ) {
-            \Lib\Alert::success('Usuario actualizado', 'El usuario se actualizo correctamente');
-            session_start();
-            $_SESSION['email'] = $email_usuario;
-            $_SESSION['nombre'] = $nombre_usuario;
-        }else {
-            \Lib\Alert::error('Error', 'El usuario no se pudo actualizar en la base de datos');
-        }
-        header("Location:" . APP_URL . "usuario");
-        exit();
+        $this->redirectToUsuario();
     }
 
+    /**
+     * Actualiza la imagen de perfil del usuario
+     *
+     * @return Redirect Redirección con resultado
+     */
     public function updateProfileImage()
     {
-        //1.verificar metodo POST
-        if($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            \Lib\Alert::info('Error', 'Acceso Denegado');
-            header("Location:" . APP_URL . "usuario");
-            exit();
+        try {
+            $this->validateRequestMethod('POST');
+            $id = $this->getValidatedUserId();
+            $imagenData = $this->validateImageUpload();
+            
+            // Obtener imagen anterior
+            $oldImage = $this->usuarioModel->getUsuario($id)['imagen_usuario'] ?? '';
+            
+            // Subir nueva imagen
+            $newFileName = $this->uploadImageFile($imagenData);
+            
+            // Actualizar base de datos
+            if ($this->usuarioModel->updateImage($id, $newFileName)) {
+                // Eliminar imagen anterior si existe
+                $this->deleteOldImage($oldImage);
+                
+                // Actualizar sesión
+                $this->updateSessionImage($newFileName);
+                
+                Alert::success('Éxito', 'Imagen actualizada correctamente');
+            } else {
+                throw new Exception('Error al actualizar en base de datos');
+            }
+        } catch (Exception $e) {
+            Alert::error('Error', $e->getMessage());
+            
+            // Eliminar archivo subido si hubo error
+            if (isset($newFileName) && file_exists($this->uploadDir . $newFileName)) {
+                unlink($this->uploadDir . $newFileName);
+            }
         }
+        $this->redirectToUsuario();
+    }
 
-        //2.verificar datos requeridos
-        $id_usuario = $_POST['id_usuario'] ?? null;
-        $imagen_usuario = $_FILES['imagen_usuario'] ?? null;
-        if(empty($id_usuario) || empty($imagen_usuario)) {
-            \Lib\Alert::error('Error', 'Todos los campos son obligatorios');
-            header("Location:" . APP_URL . "usuario");
-            exit();
-        }
+    /************************************
+     * Métodos auxiliares protegidos *
+     ************************************/
 
-        //3.Eliminar imagen antigua si existe
-        $usuarioModel = new Usuario();
-        $data = $usuarioModel->getUsuario($id_usuario);
-        $imagenAntigua = $data['imagen_usuario'];
-        if(file_exists($_SERVER['DOCUMENT_ROOT'] .'/files/'.$imagenAntigua)) {
-            unlink($_SERVER['DOCUMENT_ROOT'] .'/files/'.$imagenAntigua);
-        }
-
-        //4.Subir la nueva imagen
-        $nombreArchivo = uniqid().basename($imagen_usuario['name']);
-        $rutaDestino = $_SERVER['DOCUMENT_ROOT'].'/files/'.$nombreArchivo;
-        if(!move_uploaded_file($imagen_usuario['tmp_name'], $rutaDestino)) {
-            \Lib\Alert::error('Error', 'Error al subir la imagen');
-            header("Location:" . APP_URL . "usuario");
-            exit();
-        }
-
-        //5.Actualicar la base de datos
-        if($usuarioModel->changeImage(
-            [
-                'id_usuario' => $id_usuario,
-                'imagen_usuario' => $nombreArchivo,
+    /**
+     * Prepara los datos para creación de usuario
+     */
+    protected function prepareUserData(): array
+    {
+        $this->validateRequiredFields(
+            $_POST, [
+            'nombre_usuario', 'password_usuario', 
+            'email_usuario', 'id_rol'
             ]
-        )
-        ) {
-            session_start();
-            $_SESSION['imagen'] = $nombreArchivo;
-            \Lib\Alert::success('Imagen actualizada', 'La imagen se actualizo correctamente');
-            header("Location:" . APP_URL . "usuario");
-            exit();
-        }else {
-            \Lib\Alert::error('Error', 'La imagen no se pudo actualizar en la base de datos');
-            header("Location:" . APP_URL . "usuario");
-            exit();
+        );
+
+        if ($_POST['password_usuario'] !== $_POST['password_usuario2']) {
+            throw new Exception('Las contraseñas no coinciden');
         }
+
+        return [
+            'nombre_usuario' => $this->sanitizeInput($_POST['nombre_usuario']),
+            'password_usuario' => password_hash($_POST['password_usuario'], PASSWORD_DEFAULT),
+            'verification_token' => bin2hex(random_bytes(25)),
+            'email_usuario' => $this->sanitizeEmail($_POST['email_usuario']),
+            'id_rol' => (int)$_POST['id_rol'],
+            'fyh_creacion' => date('Y-m-d H:i:s'),
+            'estado' => 1
+        ];
+    }
+
+    /**
+     * Prepara los datos para actualización de usuario
+     */
+    protected function prepareUpdateData(int $id): array
+    {
+        $this->validateRequiredFields(
+            $_POST, [
+            'nombre_usuario', 'email_usuario', 'id_rol'
+            ]
+        );
+
+        return [
+            'id_usuario' => $id,
+            'nombre_usuario' => $this->sanitizeInput($_POST['nombre_usuario']),
+            'email_usuario' => $this->sanitizeEmail($_POST['email_usuario']),
+            'id_rol' => (int)$_POST['id_rol'],
+            'fyh_modificacion' => date('Y-m-d H:i:s'),
+            'estado' => (int)($_POST['estado'] ?? 1)
+        ];
+    }
+
+    /**
+     * Valida la eliminación de administradores
+     */
+    protected function validateAdminDeletion(int $id): void
+    {
+        $usuario = $this->usuarioModel->getUsuario($id);
+        $adminCount = $this->usuarioModel->countAdmins();
+
+        if ($usuario['id_rol'] === 1 && $adminCount === 1) {
+            throw new Exception("No se puede eliminar al último administrador");
+        }
+    }
+
+    /**
+     * Valida y procesa la subida de imagen
+     */
+    protected function validateImageUpload(): array
+    {
+        if (!isset($_FILES['imagen_usuario']) || $_FILES['imagen_usuario']['error'] !== UPLOAD_ERR_OK) {
+            throw new Exception('Debe seleccionar una imagen válida');
+        }
+
+        $file = $_FILES['imagen_usuario'];
+        
+        // Validar tipo de archivo
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        if (!in_array($file['type'], $allowedTypes)) {
+            throw new Exception('Formato de imagen no permitido (solo JPG, PNG o GIF)');
+        }
+
+        // Validar tamaño máximo (10MB)
+        if ($file['size'] > 10 * 1024 * 1024) {
+            throw new Exception('El tamaño máximo permitido es 10MB');
+        }
+
+        return $file;
+    }
+
+    /**
+     * Sube el archivo al servidor
+     */
+    protected function uploadImageFile(array $fileData): string
+    {
+        $extension = pathinfo($fileData['name'], PATHINFO_EXTENSION);
+        $newFileName = uniqid('user_') . '.' . $extension;
+        $targetPath = $this->uploadDir . $newFileName;
+
+        if (!move_uploaded_file($fileData['tmp_name'], $targetPath)) {
+            throw new Exception('Error al subir el archivo al servidor');
+        }
+
+        return $newFileName;
+    }
+
+    /**
+     * Elimina la imagen anterior de forma segura
+     */
+    protected function deleteOldImage(string $filename): void
+    {
+        if (!empty($filename)) {
+            $filePath = $this->uploadDir . basename($filename);
+            
+            if (file_exists($filePath) && is_file($filePath)) {
+                // Verificar que el archivo está dentro del directorio permitido
+                $realPath = realpath($filePath);
+                $realUploadDir = realpath($this->uploadDir);
+                
+                if (strpos($realPath, $realUploadDir) === 0) {
+                    unlink($filePath);
+                }
+            }
+        }
+    }
+
+    /**
+     * Valida y obtiene el ID de usuario
+     */
+    protected function getValidatedUserId(): int
+    {
+        $id = (int)($_POST['id_usuario'] ?? 0);
+        
+        if ($id <= 0) {
+            throw new Exception('ID de usuario inválido');
+        }
+        
+        // Verificar que el usuario existe
+        if (!$this->usuarioModel->getUsuario($id)) {
+            throw new Exception('Usuario no encontrado');
+        }
+
+        return $id;
+    }
+
+    /**
+     * Actualiza los datos de sesión del usuario
+     */
+    protected function updateSessionData(array $data): void
+    {
+        $this->startSession();
+        $_SESSION['nombre'] = $data['nombre_usuario'];
+        $_SESSION['email'] = $data['email_usuario'];
+    }
+
+    /**
+     * Actualiza la imagen de perfil en sesión
+     */
+    protected function updateSessionImage(string $filename): void
+    {
+        $this->startSession();
+        $_SESSION['imagen'] = $filename;
+    }
+
+    /**
+     * Sanitiza entradas de texto
+     */
+    protected function sanitizeInput(string $input): string
+    {
+        return trim(htmlspecialchars($input, ENT_QUOTES, 'UTF-8'));
+    }
+
+    /**
+     * Sanitiza direcciones de email
+     */
+    protected function sanitizeEmail(string $email): string
+    {
+        $cleanEmail = filter_var($email, FILTER_SANITIZE_EMAIL);
+        if (!filter_var($cleanEmail, FILTER_VALIDATE_EMAIL)) {
+            throw new Exception('El email no es válido');
+        }
+        return $cleanEmail;
+    }
+
+    /**
+     * Valida el método de solicitud HTTP
+     */
+    protected function validateRequestMethod(string $expectedMethod): void
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== strtoupper($expectedMethod)) {
+            throw new Exception('Método no permitido');
+        }
+    }
+
+    /**
+     * Asegura la existencia del directorio de uploads
+     */
+    protected function ensureUploadDirExists(): void
+    {
+        if (!file_exists($this->uploadDir)) {
+            mkdir($this->uploadDir, 0755, true);
+        }
+    }
+
+    /**
+     * Inicia la sesión si no está activa
+     */
+    protected function startSession(): void
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+    }
+
+    /**
+     * Redirección a lista de usuarios
+     */
+    protected function redirectToUsuarios(): void
+    {
+        header("Location: " . APP_URL . "usuarios");
+        exit;
+    }
+
+    /**
+     * Redirección a perfil de usuario
+     */
+    protected function redirectToUsuario(): void
+    {
+        header("Location: " . APP_URL . "usuario");
+        exit;
     }
 }
