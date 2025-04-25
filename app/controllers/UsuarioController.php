@@ -1,10 +1,12 @@
 <?php
+
 /**
  * Controlador para la gestión integral de usuarios
  * 
  * Maneja operaciones CRUD, gestión de perfiles y actualización de imágenes,
  * incluyendo validaciones de seguridad y flujos de trabajo específicos.
  */
+
 namespace App\Controllers;
 
 use App\Models\Usuario;
@@ -18,12 +20,12 @@ class UsuarioController extends Controller
      * @var Usuario Modelo de usuarios
      */
     protected $usuarioModel;
-    
+
     /**
      * @var Role Modelo de roles
      */
     protected $roleModel;
-    
+
     /**
      * @var string Directorio de subida de imágenes
      */
@@ -45,7 +47,8 @@ class UsuarioController extends Controller
     public function index()
     {
         return $this->view(
-            'usuarios', [
+            'usuarios',
+            [
             'usuarios' => $this->usuarioModel->getAllUsuarios(),
             'roles' => $this->roleModel->getAllRoles()
             ]
@@ -74,7 +77,7 @@ class UsuarioController extends Controller
         try {
             $this->validateRequestMethod('POST');
             $data = $this->prepareUserData();
-            
+
             if ($this->usuarioModel->create($data)) {
                 Alert::success('Usuario creado', 'El usuario se creó correctamente');
             } else {
@@ -97,7 +100,7 @@ class UsuarioController extends Controller
         try {
             $this->validateRequestMethod('POST');
             $data = $this->prepareUpdateData($id);
-            
+
             if ($this->usuarioModel->update($data)) {
                 Alert::success('Usuario actualizado', 'El usuario se actualizó correctamente');
             } else {
@@ -120,7 +123,9 @@ class UsuarioController extends Controller
         try {
             $this->validateRequestMethod('POST');
             $this->validateAdminDeletion($id);
-            
+            $usuario = $this->usuarioModel->getUsuario($id);
+            $this->deleteOldImage($usuario['imagen_usuario']);
+
             if ($this->usuarioModel->delete($id)) {
                 Alert::success('Usuario eliminado', 'El usuario se eliminó correctamente');
             } else {
@@ -143,7 +148,7 @@ class UsuarioController extends Controller
         try {
             $this->validateRequestMethod('POST');
             $data = $this->prepareUpdateData($id);
-            
+
             if ($this->usuarioModel->update($data)) {
                 $this->updateSessionData($data);
                 Alert::success('Perfil actualizado', 'Los datos se actualizaron correctamente');
@@ -167,28 +172,28 @@ class UsuarioController extends Controller
             $this->validateRequestMethod('POST');
             $id = $this->getValidatedUserId();
             $imagenData = $this->validateImageUpload();
-            
+
             // Obtener imagen anterior
             $oldImage = $this->usuarioModel->getUsuario($id)['imagen_usuario'] ?? '';
-            
+
             // Subir nueva imagen
             $newFileName = $this->uploadImageFile($imagenData);
-            
+
             // Actualizar base de datos
             if ($this->usuarioModel->updateImage($id, $newFileName)) {
                 // Eliminar imagen anterior si existe
                 $this->deleteOldImage($oldImage);
-                
+
                 // Actualizar sesión
                 $this->updateSessionImage($newFileName);
-                
+
                 Alert::success('Éxito', 'Imagen actualizada correctamente');
             } else {
                 throw new Exception('Error al actualizar en base de datos');
             }
         } catch (Exception $e) {
             Alert::error('Error', $e->getMessage());
-            
+
             // Eliminar archivo subido si hubo error
             if (isset($newFileName) && file_exists($this->uploadDir . $newFileName)) {
                 unlink($this->uploadDir . $newFileName);
@@ -206,25 +211,19 @@ class UsuarioController extends Controller
      */
     protected function prepareUserData(): array
     {
-        $this->validateRequiredFields(
-            $_POST, [
-            'nombre_usuario', 'password_usuario', 
-            'email_usuario', 'id_rol'
-            ]
-        );
 
         if ($_POST['password_usuario'] !== $_POST['password_usuario2']) {
             throw new Exception('Las contraseñas no coinciden');
         }
 
         return [
-            'nombre_usuario' => $this->sanitizeInput($_POST['nombre_usuario']),
-            'password_usuario' => password_hash($_POST['password_usuario'], PASSWORD_DEFAULT),
-            'verification_token' => bin2hex(random_bytes(25)),
-            'email_usuario' => $this->sanitizeEmail($_POST['email_usuario']),
-            'id_rol' => (int)$_POST['id_rol'],
-            'fyh_creacion' => date('Y-m-d H:i:s'),
-            'estado' => 1
+        'nombre_usuario' => $this->sanitizeInput($_POST['nombre_usuario']),
+        'password_usuario' => password_hash($_POST['password_usuario'], PASSWORD_DEFAULT),
+        'verification_token' => bin2hex(random_bytes(25)),
+        'email_usuario' => $this->sanitizeEmail($_POST['email_usuario']),
+        'id_rol' => (int)$_POST['id_rol'],
+        'fyh_creacion' => date('Y-m-d H:i:s'),
+        'estado' => 1
         ];
     }
 
@@ -233,19 +232,14 @@ class UsuarioController extends Controller
      */
     protected function prepareUpdateData(int $id): array
     {
-        $this->validateRequiredFields(
-            $_POST, [
-            'nombre_usuario', 'email_usuario', 'id_rol'
-            ]
-        );
 
         return [
-            'id_usuario' => $id,
-            'nombre_usuario' => $this->sanitizeInput($_POST['nombre_usuario']),
-            'email_usuario' => $this->sanitizeEmail($_POST['email_usuario']),
-            'id_rol' => (int)$_POST['id_rol'],
-            'fyh_modificacion' => date('Y-m-d H:i:s'),
-            'estado' => (int)($_POST['estado'] ?? 1)
+        'id_usuario' => $id,
+        'nombre_usuario' => $this->sanitizeInput($_POST['nombre_usuario']),
+        'email_usuario' => $this->sanitizeEmail($_POST['email_usuario']),
+        'id_rol' => (int)$_POST['id_rol'],
+        'fyh_modificacion' => date('Y-m-d H:i:s'),
+        'estado' => (int)($_POST['estado'] ?? 1)
         ];
     }
 
@@ -272,7 +266,7 @@ class UsuarioController extends Controller
         }
 
         $file = $_FILES['imagen_usuario'];
-        
+
         // Validar tipo de archivo
         $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
         if (!in_array($file['type'], $allowedTypes)) {
@@ -310,12 +304,12 @@ class UsuarioController extends Controller
     {
         if (!empty($filename)) {
             $filePath = $this->uploadDir . basename($filename);
-            
+
             if (file_exists($filePath) && is_file($filePath)) {
                 // Verificar que el archivo está dentro del directorio permitido
                 $realPath = realpath($filePath);
                 $realUploadDir = realpath($this->uploadDir);
-                
+
                 if (strpos($realPath, $realUploadDir) === 0) {
                     unlink($filePath);
                 }
@@ -329,11 +323,11 @@ class UsuarioController extends Controller
     protected function getValidatedUserId(): int
     {
         $id = (int)($_POST['id_usuario'] ?? 0);
-        
+
         if ($id <= 0) {
             throw new Exception('ID de usuario inválido');
         }
-        
+
         // Verificar que el usuario existe
         if (!$this->usuarioModel->getUsuario($id)) {
             throw new Exception('Usuario no encontrado');
