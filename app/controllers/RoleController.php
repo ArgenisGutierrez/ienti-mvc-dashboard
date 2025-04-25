@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Controlador para la gestión de roles de usuarios
  * 
@@ -8,9 +9,11 @@
  * - Actualización de roles existentes
  * - Eliminación de roles
  */
+
 namespace App\Controllers;
 
 use App\Models\Role;
+use App\Models\Permiso;
 use Lib\Alert;
 
 class RoleController extends Controller
@@ -19,6 +22,7 @@ class RoleController extends Controller
      * @var Role Modelo de roles
      */
     private $roleModel;
+    private $permisoModel;
 
     /**
      * Constructor: Inicializa el modelo de roles
@@ -26,6 +30,7 @@ class RoleController extends Controller
     public function __construct()
     {
         $this->roleModel = new Role();
+        $this->permisoModel = new Permiso();
     }
 
     /**
@@ -35,9 +40,15 @@ class RoleController extends Controller
      */
     public function index()
     {
+        $roles = $this->roleModel->getAllRoles();
+        foreach ($roles as &$rol) {
+            $rol['permisos'] = $this->permisoModel->getPermisosByRol($rol['id_rol']);
+        }
         return $this->view(
-            'roles', [
-            'roles' => $this->roleModel->getAllRoles()
+            'roles',
+            [
+            'roles' => $roles,
+            'permisos' => $this->permisoModel->getAllPermisos()
             ]
         );
     }
@@ -62,6 +73,17 @@ class RoleController extends Controller
             'estado' => '1'
             ]
         );
+        if ($result) {
+            $idRol = $this->roleModel->getIdByName($nombreRol);
+            foreach ($_POST['permisos'] as $permiso) {
+                $this->permisoModel->addPermiso(
+                    [
+                    'id_permiso' => $permiso,
+                    'id_rol' => $idRol
+                    ]
+                );
+            }
+        }
 
         $this->handleOperationResult(
             $result,
@@ -167,7 +189,7 @@ class RoleController extends Controller
         if ($result) {
             $this->redirectWithAlert('success', 'Éxito', $successMessage, $redirectPath);
         }
-        
+
         $this->redirectWithAlert('error', 'Error', $errorMessage, $redirectPath);
     }
 

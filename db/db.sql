@@ -29,6 +29,7 @@ CREATE TABLE usuarios (
   verification_token VARCHAR(255),
   email_usuario VARCHAR(255) NOT NULL UNIQUE KEY,
   password_usuario TEXT NOT NULL,
+  imagen_usuario VARCHAR (255),
 
   fyh_creacion DATETIME NULL,
   fyh_modificacion DATETIME NULL,
@@ -55,3 +56,43 @@ CREATE TABLE recursos (
   estado VARCHAR (11)
 )ENGINE=InnoDB;
 );
+
+-- Tabla de permisos
+CREATE TABLE permisos (
+    id_permiso INT PRIMARY KEY AUTO_INCREMENT,
+    nombre_permiso VARCHAR(50) UNIQUE NOT NULL,
+    descripcion_permiso VARCHAR(255)
+);
+
+-- Tabla intermedia roles-permisos
+CREATE TABLE role_permiso (
+    id_rol INT,
+    id_permiso INT,
+    PRIMARY KEY (id_rol, id_permiso),
+    FOREIGN KEY (id_rol) REFERENCES roles(id_rol),
+    FOREIGN KEY (id_permiso) REFERENCES permisos(id_permiso)
+);
+
+-- Permisos para Usuarios
+INSERT INTO permisos (nombre_permiso, descripcion_permiso) 
+VALUES 
+    ('Crear Usuarios', 'Permite registrar nuevos usuarios en el sistema'),
+    ('Ver Usuarios', 'Permite ver la lista de usuarios y sus detalles'),
+    ('Editar Usuarios', 'Permite acceder a la interfaz de edición de usuarios'),
+    ('Eliminar Usuarios', 'Permite eliminar un usuario permanentemente');
+
+-- Permisos para Roles
+INSERT INTO permisos (nombre_permiso, descripcion_permiso) 
+VALUES 
+    ('Crear Roles', 'Permite definir nuevos roles en el sistema'),
+    ('Ver Roles', 'Permite ver la lista de roles y sus configuraciones'),
+    ('Editar Roles', 'Permite modificar permisos asociados a un rol'),
+    ('Eliminar Roles', 'Permite eliminar un rol del sistema');
+
+-- Permisos para Recursos
+INSERT INTO permisos (nombre_permiso, descripcion_permiso) 
+VALUES
+    ('Crear Recursos', 'Permite agregar nuevos recursos al sistema'),
+    ('Ver Recursos', 'Permite ver recursos disponibles en el sistema'),
+    ('Editar Recursos', 'Permite acceder a la edición de un recurso'),
+    ('Eliminar Recursos', 'Permite eliminar un recurso permanentemente');
