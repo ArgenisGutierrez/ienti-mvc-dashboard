@@ -60,6 +60,10 @@ class RoleController extends Controller
      */
     public function create()
     {
+        session_start();
+        if (!in_array("Crear Roles", $_SESSION["permisos"])) {
+            $this->handleOperationResult(false, "", "No tienes permisos para crear roles", "roles");
+        }
         $nombreRol = $this->sanitizeInput($_POST['nombre_rol'] ?? '');
 
         if (!$this->validateRoleName($nombreRol)) {
@@ -101,6 +105,10 @@ class RoleController extends Controller
      */
     public function update($id_rol)
     {
+        session_start();
+        if (!in_array("Editar Roles", $_SESSION["permisos"])) {
+            $this->handleOperationResult(false, "", "No tienes permisos para editar roles", "roles");
+        }
         $idRol = (int)$id_rol;
         $nombreRol = $this->sanitizeInput($_POST['nombre_rol'] ?? '');
 
@@ -149,6 +157,11 @@ class RoleController extends Controller
      */
     public function delete($id_rol)
     {
+        session_start();
+        if (!in_array("Eliminar Roles", $_SESSION["permisos"])) {
+            $this->handleOperationResult(false, "", "No tienes permisos para eliminar roles", "roles");
+        }
+
         $idRol = (int)$id_rol;
 
         if ($idRol <= 0) {

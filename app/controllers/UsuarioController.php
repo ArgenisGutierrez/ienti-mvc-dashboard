@@ -75,6 +75,11 @@ class UsuarioController extends Controller
     public function create()
     {
         try {
+            session_start();
+            if (!in_array("Crear Usuarios", $_SESSION["permisos"])) {
+                throw new Exception("No tienes permiso para crear usuarios");
+            }
+
             $this->validateRequestMethod('POST');
             $data = $this->prepareUserData();
 
@@ -98,6 +103,10 @@ class UsuarioController extends Controller
     public function update($id)
     {
         try {
+            session_start();
+            if (!in_array("Editar Usuarios", $_SESSION["permisos"])) {
+                throw new Exception("No tienes permiso para editar usuarios");
+            }
             $this->validateRequestMethod('POST');
             $data = $this->prepareUpdateData($id);
 
@@ -121,6 +130,11 @@ class UsuarioController extends Controller
     public function delete($id)
     {
         try {
+            session_start();
+            if (!in_array("Eliminar Usuarios", $_SESSION["permisos"])) {
+                throw new Exception("No tienes permiso para eliminar usuarios");
+            }
+
             $this->validateRequestMethod('POST');
             $this->validateAdminDeletion($id);
             $usuario = $this->usuarioModel->getUsuario($id);
