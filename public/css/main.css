@@ -742,7 +742,7 @@ p {
   width: 250px;
   padding: 0;
   height: calc(100vh - 65px);
-  background: #0f50ad;
+  background: #2c395e;
   position: fixed;
   top: 65px;
   left: 0;
@@ -785,7 +785,7 @@ p {
   position: relative;
   padding: 5px 20px 5px 20px;
   color: #eef2f8;
-  background: #0f50ad;
+  background: #2c395e;
   font-size: 0.9rem;
   -webkit-transition: all 0.5s ease-in-out;
   transition: all 0.5s ease-in-out;
