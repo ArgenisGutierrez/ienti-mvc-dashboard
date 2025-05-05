@@ -1,8 +1,8 @@
 <?php
 session_start();
 if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
-  session_regenerate_id(true);
-?>
+    session_regenerate_id(true);
+    ?>
   <!DOCTYPE html>
   <html lang="es-MX">
 
@@ -169,6 +169,7 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                                   <thead>
                                     <tr>
                                       <th>Descripción</th>
+                                      <th>Publicación</th>
                                       <th>Descargar</th>
                                       <?php if (isset($_SESSION['permisos']) && in_array("Editar Recursos", $_SESSION['permisos'])) : ?>
                                         <th>Editar</th>
@@ -180,46 +181,49 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                                   </thead>
                                   <tbody>
                                     <?php foreach ($recursos as $recurso) {
-                                      if ($recurso['clasificacion_recurso'] == "Material Normativo") {
-                                    ?>
+                                        if ($recurso['clasificacion_recurso'] == "Material Normativo") {
+                                            ?>
                                         <tr>
                                           <td>
                                             <?php echo $recurso['descripcion_recurso'] ?>
                                           </td>
                                           <td>
+                                            <?php echo $recurso['fyh_creacion'] ?>
+                                          </td>
+                                          <td>
                                             <?php
                                             switch ($recurso['tipo_recurso']) {
-                                              case 'URL':
-                                            ?>
+                                            case 'URL':
+                                                ?>
                                                 <a target="_blank" href="<?php echo $recurso['contenido_recurso']; ?>"
                                                   download="<?php echo $recurso['contenido_recurso'] ?>" type="button"
                                                   class="btn btn-info editar-btn">
                                                   <i class="bi bi-link-45deg"></i>
                                                 </a>
-                                              <?php
+                                                <?php
                                                 break;
-                                              case 'Archivo':
-                                              ?>
+                                            case 'Archivo':
+                                                ?>
                                                 <a target="_blank" href="<?php echo APP_URL . 'files/' .
-                                                                            $recurso['contenido_recurso']; ?>"
+                                                                          $recurso['contenido_recurso']; ?>"
                                                   type="button" class="btn
                                         btn-info editar-btn">
                                                   <i class="bi bi-cloud-arrow-down-fill"></i>
                                                 </a>
-                                              <?php
+                                                <?php
                                                 break;
-                                              default:
-                                              ?>
+                                            default:
+                                                ?>
                                                 <a target="_blank" href="<?php echo $recurso['contenido_recurso'] ?>"
                                                   type="button" class="btn btn-info editar-btn">
                                                   <i class="bi bi-film"></i>
                                                 </a>
-                                            <?php
+                                                <?php
                                                 break;
                                             }
                                             ?>
                                           </td>
-                                          <?php if (isset($_SESSION['permisos']) && in_array("Editar Recursos", $_SESSION['permisos'])) : ?>
+                                            <?php if (isset($_SESSION['permisos']) && in_array("Editar Recursos", $_SESSION['permisos'])) : ?>
                                             <td>
                                               <!-- Botón que abre el modal específico para cada registro -->
                                               <button type="button" class="btn btn-primary editar-btn" data-bs-toggle="modal"
@@ -276,8 +280,8 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                                                               'Material Complementario'
                                                             ];
                                                             foreach ($clasificaciones as $clasif) {
-                                                              $selected = $recurso['clasificacion_recurso'] == $clasif ? 'selected' : '';
-                                                              echo "<option value='$clasif' $selected>$clasif</option>";
+                                                                $selected = $recurso['clasificacion_recurso'] == $clasif ? 'selected' : '';
+                                                                echo "<option value='$clasif' $selected>$clasif</option>";
                                                             }
                                                             ?>
                                                           </select>
@@ -290,8 +294,8 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                                                             <?php
                                                             $tipos = ['URL', 'Archivo', 'Video'];
                                                             foreach ($tipos as $tipo) {
-                                                              $selected = $recurso['tipo_recurso'] == $tipo ? 'selected' : '';
-                                                              echo "<option value='$tipo' $selected>$tipo</option>";
+                                                                $selected = $recurso['tipo_recurso'] == $tipo ? 'selected' : '';
+                                                                echo "<option value='$tipo' $selected>$tipo</option>";
                                                             }
                                                             ?>
                                                           </select>
@@ -340,8 +344,8 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                                                 </div>
                                               </div>
                                             </td>
-                                          <?php endif; ?>
-                                          <?php if (isset($_SESSION['permisos']) && in_array("Eliminar Recursos", $_SESSION['permisos'])) : ?>
+                                            <?php endif; ?>
+                                            <?php if (isset($_SESSION['permisos']) && in_array("Eliminar Recursos", $_SESSION['permisos'])) : ?>
                                             <td>
                                               <!-- Formulario para eliminar -->
                                               <form id="formEliminar<?php echo $recurso['id_recurso'] ?>" method="POST"
@@ -352,10 +356,10 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                                                 </button>
                                               </form>
                                             </td>
-                                          <?php endif; ?>
+                                            <?php endif; ?>
                                         </tr>
-                                    <?php
-                                      }
+                                            <?php
+                                        }
                                     } ?>
                                   </tbody>
                                 </table>
@@ -381,6 +385,7 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                                   <thead>
                                     <tr>
                                       <th>Descripción</th>
+                                      <th>Publicación</th>
                                       <th>Descargar</th>
                                       <?php if (isset($_SESSION['permisos']) && in_array("Editar Recursos", $_SESSION['permisos'])) : ?>
                                         <th>Editar</th>
@@ -392,46 +397,49 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                                   </thead>
                                   <tbody>
                                     <?php foreach ($recursos as $recurso) {
-                                      if ($recurso['clasificacion_recurso'] == "Material Relativo a Capacitación") {
-                                    ?>
+                                        if ($recurso['clasificacion_recurso'] == "Material Relativo a Capacitación") {
+                                            ?>
                                         <tr>
                                           <td>
                                             <?php echo $recurso['descripcion_recurso'] ?>
                                           </td>
                                           <td>
+                                            <?php echo $recurso['fyh_creacion'] ?>
+                                          </td>
+                                          <td>
                                             <?php
                                             switch ($recurso['tipo_recurso']) {
-                                              case 'URL':
-                                            ?>
+                                            case 'URL':
+                                                ?>
                                                 <a target="_blank" href="<?php echo $recurso['contenido_recurso']; ?>"
                                                   download="<?php echo $recurso['contenido_recurso'] ?>" type="button"
                                                   class="btn btn-info editar-btn">
                                                   <i class="bi bi-link-45deg"></i>
                                                 </a>
-                                              <?php
+                                                <?php
                                                 break;
-                                              case 'Archivo':
-                                              ?>
+                                            case 'Archivo':
+                                                ?>
                                                 <a target="_blank" href="<?php echo APP_URL .
-                                                                            'files/' . $recurso['contenido_recurso'];
-                                                                          ?>" type="button" class="btn
+                                                                          'files/' . $recurso['contenido_recurso'];
+                                                ?>" type="button" class="btn
                                         btn-info editar-btn">
                                                   <i class="bi bi-cloud-arrow-down-fill"></i>
                                                 </a>
-                                              <?php
+                                                <?php
                                                 break;
-                                              default:
-                                              ?>
+                                            default:
+                                                ?>
                                                 <a target="_blank" href="<?php echo $recurso['contenido_recurso'] ?>"
                                                   type="button" class="btn btn-info editar-btn">
                                                   <i class="bi bi-film"></i>
                                                 </a>
-                                            <?php
+                                                <?php
                                                 break;
                                             }
                                             ?>
                                           </td>
-                                          <?php if (isset($_SESSION['permisos']) && in_array("Editar Recursos", $_SESSION['permisos'])) : ?>
+                                            <?php if (isset($_SESSION['permisos']) && in_array("Editar Recursos", $_SESSION['permisos'])) : ?>
                                             <td>
                                               <!-- Botón que abre el modal específico para cada registro -->
                                               <button type="button" class="btn btn-primary editar-btn" data-bs-toggle="modal"
@@ -488,8 +496,8 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                                                               'Material Complementario'
                                                             ];
                                                             foreach ($clasificaciones as $clasif) {
-                                                              $selected = $recurso['clasificacion_recurso'] == $clasif ? 'selected' : '';
-                                                              echo "<option value='$clasif' $selected>$clasif</option>";
+                                                                $selected = $recurso['clasificacion_recurso'] == $clasif ? 'selected' : '';
+                                                                echo "<option value='$clasif' $selected>$clasif</option>";
                                                             }
                                                             ?>
                                                           </select>
@@ -502,8 +510,8 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                                                             <?php
                                                             $tipos = ['URL', 'Archivo', 'Video'];
                                                             foreach ($tipos as $tipo) {
-                                                              $selected = $recurso['tipo_recurso'] == $tipo ? 'selected' : '';
-                                                              echo "<option value='$tipo' $selected>$tipo</option>";
+                                                                $selected = $recurso['tipo_recurso'] == $tipo ? 'selected' : '';
+                                                                echo "<option value='$tipo' $selected>$tipo</option>";
                                                             }
                                                             ?>
                                                           </select>
@@ -552,8 +560,8 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                                                 </div>
                                               </div>
                                             </td>
-                                          <?php endif; ?>
-                                          <?php if (isset($_SESSION['permisos']) && in_array("Editar Recursos", $_SESSION['permisos'])) : ?>
+                                            <?php endif; ?>
+                                            <?php if (isset($_SESSION['permisos']) && in_array("Editar Recursos", $_SESSION['permisos'])) : ?>
                                             <td>
                                               <!-- Formulario para eliminar -->
                                               <form id="formEliminar<?php echo $recurso['id_recurso'] ?>" method="POST"
@@ -566,10 +574,10 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                                                 </button>
                                               </form>
                                             </td>
-                                          <?php endif; ?>
+                                            <?php endif; ?>
                                         </tr>
-                                    <?php
-                                      }
+                                            <?php
+                                        }
                                     } ?>
                                   </tbody>
                                 </table>
@@ -595,6 +603,7 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                                   <thead>
                                     <tr>
                                       <th>Descripción</th>
+                                      <th>Publicación</th>
                                       <th>Descargar</th>
                                       <?php if (isset($_SESSION['permisos']) && in_array("Editar Recursos", $_SESSION['permisos'])) : ?>
                                         <th>Editar</th>
@@ -607,46 +616,49 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                                   </thead>
                                   <tbody>
                                     <?php foreach ($recursos as $recurso) {
-                                      if ($recurso['clasificacion_recurso'] == "Material Complementario") {
-                                    ?>
+                                        if ($recurso['clasificacion_recurso'] == "Material Complementario") {
+                                            ?>
                                         <tr>
                                           <td>
                                             <?php echo $recurso['descripcion_recurso'] ?>
                                           </td>
                                           <td>
+                                            <?php echo $recurso['fyh_creacion'] ?>
+                                          </td>
+                                          <td>
                                             <?php
                                             switch ($recurso['tipo_recurso']) {
-                                              case 'URL':
-                                            ?>
+                                            case 'URL':
+                                                ?>
                                                 <a target="_blank" href="<?php echo $recurso['contenido_recurso']; ?>"
                                                   download="<?php echo $recurso['contenido_recurso'] ?>" type="button"
                                                   class="btn btn-info editar-btn">
                                                   <i class="bi bi-link-45deg"></i>
                                                 </a>
-                                              <?php
+                                                <?php
                                                 break;
-                                              case 'Archivo':
-                                              ?>
+                                            case 'Archivo':
+                                                ?>
                                                 <a target="_blank" href="<?php echo APP_URL .
-                                                                            'files/' . $recurso['contenido_recurso'];
-                                                                          ?>" type="button" class="btn
+                                                                          'files/' . $recurso['contenido_recurso'];
+                                                ?>" type="button" class="btn
                                         btn-info editar-btn">
                                                   <i class="bi bi-cloud-arrow-down-fill"></i>
                                                 </a>
-                                              <?php
+                                                <?php
                                                 break;
-                                              default:
-                                              ?>
+                                            default:
+                                                ?>
                                                 <a target="_blank" href="<?php echo $recurso['contenido_recurso'] ?>"
                                                   type="button" class="btn btn-info editar-btn">
                                                   <i class="bi bi-film"></i>
                                                 </a>
-                                            <?php
+                                                <?php
                                                 break;
                                             }
                                             ?>
                                           </td>
-                                          <?php if (isset($_SESSION['permisos']) && in_array("Editar Recursos", $_SESSION['permisos'])) : ?>
+                                            <?php if (isset($_SESSION['permisos']) && in_array("Editar Recursos", $_SESSION['permisos'])) : ?>
                                             <td>
                                               <!-- Botón que abre el modal específico para cada registro -->
                                               <button type="button" class="btn btn-primary editar-btn" data-bs-toggle="modal"
@@ -703,8 +715,8 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                                                               'Material Complementario'
                                                             ];
                                                             foreach ($clasificaciones as $clasif) {
-                                                              $selected = $recurso['clasificacion_recurso'] == $clasif ? 'selected' : '';
-                                                              echo "<option value='$clasif' $selected>$clasif</option>";
+                                                                $selected = $recurso['clasificacion_recurso'] == $clasif ? 'selected' : '';
+                                                                echo "<option value='$clasif' $selected>$clasif</option>";
                                                             }
                                                             ?>
                                                           </select>
@@ -717,8 +729,8 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                                                             <?php
                                                             $tipos = ['URL', 'Archivo', 'Video'];
                                                             foreach ($tipos as $tipo) {
-                                                              $selected = $recurso['tipo_recurso'] == $tipo ? 'selected' : '';
-                                                              echo "<option value='$tipo' $selected>$tipo</option>";
+                                                                $selected = $recurso['tipo_recurso'] == $tipo ? 'selected' : '';
+                                                                echo "<option value='$tipo' $selected>$tipo</option>";
                                                             }
                                                             ?>
                                                           </select>
@@ -767,8 +779,8 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                                                 </div>
                                               </div>
                                             </td>
-                                          <?php endif; ?>
-                                          <?php if (isset($_SESSION['permisos']) && in_array("Eliminar Recursos", $_SESSION['permisos'])) : ?>
+                                            <?php endif; ?>
+                                            <?php if (isset($_SESSION['permisos']) && in_array("Eliminar Recursos", $_SESSION['permisos'])) : ?>
                                             <td>
                                               <!-- Formulario para eliminar -->
                                               <form id="formEliminar<?php echo $recurso['id_recurso'] ?>" method="POST"
@@ -781,10 +793,10 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                                                 </button>
                                               </form>
                                             </td>
-                                          <?php endif; ?>
+                                            <?php endif; ?>
                                         </tr>
-                                    <?php
-                                      }
+                                            <?php
+                                        }
                                     } ?>
                                   </tbody>
                                 </table>
@@ -849,8 +861,8 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
       <!-- sweetalert2 -->
       <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
       <?php Lib\Alert::display(); ?>
-
       <script src="js/recursos.js"></script>
+
       <script>
         $(document).on('submit', 'form[id^="formEliminar"]', function(e) {
           console.log("Formulario enviado"); // ¿Aparece esto en la consola?
@@ -873,12 +885,88 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
           });
         });
       </script>
+      <script>
+        $(function() {
+          // Configuración común para todas las tablas
+          const dataTableConfig = {
+            columnDefs: [{
+                targets: 0,
+                width: "70%",
+                orderable: true,
+                searchable: true,
+                className: "columna-descripcion"
+              },
+              {
+                targets: 1,
+                width: "15%",
+                orderable: true,
+                searchable: true,
+                className: "columna-publicacion"
+              },
+              {
+                targets: 2,
+                orderable: false,
+                searchable: false,
+                className: "columna-botones"
+              }
+              <?php if (isset($_SESSION['permisos']) && in_array("Editar Recursos", $_SESSION['permisos'])) : ?>,
+                {
+                  targets: 3,
+                  orderable: false,
+                  searchable: false,
+                  className: "columna-botones"
+                }
+              <?php endif; ?>
+              <?php if (isset($_SESSION['permisos']) && in_array("Eliminar Recursos", $_SESSION['permisos'])) : ?>,
+                {
+                  targets: <?php echo (in_array("Editar Recursos", $_SESSION['permisos'])) ? 4 : 3; ?>,
+                  orderable: false,
+                  searchable: false,
+                  className: "columna-botones"
+                }
+              <?php endif; ?>
+            ],
+            autoWidth: false,
+            language: {
+              emptyTable: "No hay información",
+              info: "Mostrando _START_ a _END_ de _TOTAL_ Recursos",
+              infoEmpty: "Mostrando 0 a 0 de 0 Recursos",
+              infoFiltered: "(Filtrado de _MAX_ total Recursos)",
+              lengthMenu: "Mostrar _MENU_ Recursos",
+              loadingRecords: "Cargando...",
+              processing: "Procesando...",
+              search: "Buscador:",
+              zeroRecords: "Sin resultados encontrados",
+              paginate: {
+                first: "Primero",
+                last: "Último",
+                next: "Siguiente",
+                previous: "Anterior"
+              }
+            }
+          };
+
+          // Aplicar a todas las tablas con clase .table
+          $('.table').each(function() {
+            const table = $(this);
+
+            // Destruir si ya existe
+            if ($.fn.dataTable.isDataTable(table)) {
+              table.DataTable().destroy();
+            }
+
+            // Inicializar con la configuración
+            table.DataTable(dataTableConfig);
+          });
+        });
+      </script>
+
   </body>
 
   </html>
-<?php
+    <?php
 } else {
-  header('Location:' . APP_URL . 'login');
-  exit();
+    header('Location:' . APP_URL . 'login');
+    exit();
 }
 ?>

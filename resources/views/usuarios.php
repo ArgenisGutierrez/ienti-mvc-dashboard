@@ -1,8 +1,8 @@
 <?php
 session_start();
 if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
-  session_regenerate_id(true);
-?>
+    session_regenerate_id(true);
+    ?>
   <!DOCTYPE html>
   <html lang="es-MX">
 
@@ -134,7 +134,7 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                                       <option selected disabled value="">Asignar...</option>
                                       <?php foreach ($roles as $role) { ?>
                                         <option value="<?php echo $role['id_rol'] ?>">
-                                          <?php echo $role['nombre_rol'] ?>
+                                            <?php echo $role['nombre_rol'] ?>
                                         </option>
                                       <?php } ?>
                                     </select>
@@ -183,9 +183,9 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                               </td>
                               <td>
                                 <?php if ($usuario['estado'] == 1) {
-                                  echo "Activo";
+                                    echo "Activo";
                                 } else {
-                                  echo "Desactivado";
+                                    echo "Desactivado";
                                 } ?>
                               </td>
                               <td>
@@ -229,7 +229,7 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                                               <option disabled value="">Asignar...</option>
                                               <?php foreach ($roles as $role): ?>
                                                 <option value="<?php echo $role['id_rol'] ?>" <?php echo ($role['id_rol'] == $usuario['id_rol']) ? 'selected' : '' ?>>
-                                                  <?php echo $role['nombre_rol'] ?>
+                                                    <?php echo $role['nombre_rol'] ?>
                                                 </option>
                                               <?php endforeach; ?>
                                             </select>
@@ -338,13 +338,72 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
           });
         </script>
         <?php Lib\Alert::display(); ?>
+        <script>
+          $(function() {
+            // Destruir instancia previa si existe
+            if ($.fn.DataTable.isDataTable('#usuarios_table')) {
+              $('#usuarios_table').DataTable().destroy();
+            }
+
+            // Configuración de columnas
+            var columnDefs = [{
+              targets: [0, 1, 2, 3, 4],
+              width: "19%", // Corregido: "width" en vez de "with"
+              orderable: true,
+              searchable: true,
+              className: "columna-descripcion"
+            }];
+
+            // Condicionales para columnas adicionales
+            <?php if (isset($_SESSION['permisos']) && in_array("Editar Usuarios", $_SESSION['permisos'])) : ?>
+              columnDefs.push({
+                targets: 5,
+                orderable: false,
+                searchable: false,
+                className: "columna-botones"
+              });
+            <?php endif; ?>
+
+            <?php if (isset($_SESSION['permisos']) && in_array("Eliminar Usuarios", $_SESSION['permisos'])) : ?>
+              columnDefs.push({
+                targets: <?php echo (in_array("Editar Usuarios", $_SESSION['permisos'])) ? 6 : 5; ?>,
+                orderable: false,
+                searchable: false,
+                className: "columna-botones"
+              });
+            <?php endif; ?>
+
+            // Inicialización de DataTable
+            $('#usuarios_table').DataTable({
+              columnDefs: columnDefs,
+              autoWidth: false,
+              language: {
+                emptyTable: "No hay información",
+                info: "Mostrando _START_ a _END_ de _TOTAL_ Usuarios",
+                infoEmpty: "Mostrando 0 a 0 de 0 Usuarios",
+                infoFiltered: "(Filtrado de _MAX_ total Usuarios)",
+                lengthMenu: "Mostrar _MENU_ Usuarios",
+                loadingRecords: "Cargando...",
+                processing: "Procesando...",
+                search: "Buscador:",
+                zeroRecords: "Sin resultados encontrados",
+                paginate: {
+                  first: "Primero",
+                  last: "Último",
+                  next: "Siguiente",
+                  previous: "Anterior"
+                }
+              }
+            });
+          });
+        </script>
   </body>
 
   </html>
 
-<?php
+    <?php
 } else {
-  header('Location:' . APP_URL . 'login');
-  exit();
+    header('Location:' . APP_URL . 'login');
+    exit();
 }
 ?>
