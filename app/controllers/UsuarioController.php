@@ -3,8 +3,13 @@
 /**
  * Controlador para la gestión integral de usuarios
  * 
- * Maneja operaciones CRUD, gestión de perfiles y actualización de imágenes,
- * incluyendo validaciones de seguridad y flujos de trabajo específicos.
+ * Maneja todas las operaciones relacionadas con usuarios incluyendo:
+ * - Creación, lectura, actualización y eliminación (CRUD) de usuarios
+ * - Gestión de perfiles y actualización de imágenes
+ * - Validaciones de seguridad y controles de acceso
+ * - Manejo de sesiones y permisos
+ * 
+ * @package App\Controllers
  */
 
 namespace App\Controllers;
@@ -17,20 +22,23 @@ use Lib\Alert;
 class UsuarioController extends Controller
 {
     /**
-     * @var Usuario Modelo de usuarios
+     * @var Usuario Modelo para operaciones con usuarios
      */
     protected $usuarioModel;
 
     /**
-     * @var Role Modelo de roles
+     * @var Role Modelo para gestión de roles
      */
     protected $roleModel;
 
     /**
-     * @var string Directorio de subida de imágenes
+     * @var string Ruta absoluta del directorio para subida de archivos
      */
     protected $uploadDir;
 
+    /**
+     * Constructor - Inicializa dependencias y configuración
+     */
     public function __construct()
     {
         $this->usuarioModel = new Usuario();
@@ -40,9 +48,9 @@ class UsuarioController extends Controller
     }
 
     /**
-     * Muestra el listado de usuarios con sus roles
+     * Muestra el listado completo de usuarios con sus roles asociados
      *
-     * @return Response Vista de usuarios
+     * @return View Vista de usuarios con datos necesarios
      */
     public function index()
     {
@@ -56,9 +64,9 @@ class UsuarioController extends Controller
     }
 
     /**
-     * Muestra el perfil del usuario actual
+     * Muestra el perfil del usuario actualmente autenticado
      *
-     * @return Response Vista de perfil
+     * @return View Vista de perfil con datos del usuario
      */
     public function perfil()
     {
@@ -70,12 +78,13 @@ class UsuarioController extends Controller
     /**
      * Crea un nuevo usuario en el sistema
      *
-     * @return Redirect Redirección con resultado
+     * @return void Redirección con notificación de resultado
      */
     public function create()
     {
         try {
             session_start();
+            // Validación de permisos
             if (!in_array("Crear Usuarios", $_SESSION["permisos"])) {
                 throw new Exception("No tienes permiso para crear usuarios");
             }
@@ -95,15 +104,16 @@ class UsuarioController extends Controller
     }
 
     /**
-     * Actualiza los datos de un usuario existente
+     * Actualiza la información de un usuario existente
      *
-     * @param  int $id ID del usuario
-     * @return Redirect Redirección con resultado
+     * @param  int $id ID del usuario a actualizar
+     * @return void Redirección con notificación de resultado
      */
     public function update($id)
     {
         try {
             session_start();
+            // Validación de permisos
             if (!in_array("Editar Usuarios", $_SESSION["permisos"])) {
                 throw new Exception("No tienes permiso para editar usuarios");
             }
@@ -124,13 +134,14 @@ class UsuarioController extends Controller
     /**
      * Elimina un usuario del sistema
      *
-     * @param  int $id ID del usuario
-     * @return Redirect Redirección con resultado
+     * @param  int $id ID del usuario a eliminar
+     * @return void Redirección con notificación de resultado
      */
     public function delete($id)
     {
         try {
             session_start();
+            // Validación de permisos
             if (!in_array("Eliminar Usuarios", $_SESSION["permisos"])) {
                 throw new Exception("No tienes permiso para eliminar usuarios");
             }
@@ -152,10 +163,10 @@ class UsuarioController extends Controller
     }
 
     /**
-     * Actualiza el perfil del usuario actual
+     * Actualiza el perfil del usuario autenticado
      *
      * @param  int $id ID del usuario
-     * @return Redirect Redirección con resultado
+     * @return void Redirección con notificación de resultado
      */
     public function updatePerfil($id)
     {
@@ -178,7 +189,7 @@ class UsuarioController extends Controller
     /**
      * Actualiza la imagen de perfil del usuario
      *
-     * @return Redirect Redirección con resultado
+     * @return void Redirección con notificación de resultado
      */
     public function updateProfileImage()
     {
@@ -187,7 +198,7 @@ class UsuarioController extends Controller
             $id = $this->getValidatedUserId();
             $imagenData = $this->validateImageUpload();
 
-            // Obtener imagen anterior
+            // Manejo de imagen anterior
             $oldImage = $this->usuarioModel->getUsuario($id)['imagen_usuario'] ?? '';
 
             // Subir nueva imagen
@@ -195,7 +206,7 @@ class UsuarioController extends Controller
 
             // Actualizar base de datos
             if ($this->usuarioModel->updateImage($id, $newFileName)) {
-                // Eliminar imagen anterior si existe
+                // Eliminar imagen anterior de forma segura
                 $this->deleteOldImage($oldImage);
 
                 // Actualizar sesión
@@ -208,7 +219,7 @@ class UsuarioController extends Controller
         } catch (Exception $e) {
             Alert::error('Error', $e->getMessage());
 
-            // Eliminar archivo subido si hubo error
+            // Limpieza de archivos en caso de error
             if (isset($newFileName) && file_exists($this->uploadDir . $newFileName)) {
                 unlink($this->uploadDir . $newFileName);
             }
@@ -221,11 +232,13 @@ class UsuarioController extends Controller
      ************************************/
 
     /**
-     * Prepara los datos para creación de usuario
+     * Prepara los datos para creación de usuarios
+     *
+     * @return array Datos sanitizados y validados
+     * @throws Exception Si las contraseñas no coinciden
      */
     protected function prepareUserData(): array
     {
-
         if ($_POST['password_usuario'] !== $_POST['password_usuario2']) {
             throw new Exception('Las contraseñas no coinciden');
         }
@@ -242,11 +255,13 @@ class UsuarioController extends Controller
     }
 
     /**
-     * Prepara los datos para actualización de usuario
+     * Prepara los datos para actualización de usuarios
+     *
+     * @param  int $id ID del usuario
+     * @return array Datos actualizados
      */
     protected function prepareUpdateData(int $id): array
     {
-
         return [
         'id_usuario' => $id,
         'nombre_usuario' => $this->sanitizeInput($_POST['nombre_usuario']),
@@ -258,7 +273,10 @@ class UsuarioController extends Controller
     }
 
     /**
-     * Valida la eliminación de administradores
+     * Valida que no se elimine el último administrador
+     *
+     * @param  int $id ID del usuario a eliminar
+     * @throws Exception Si se intenta eliminar el último admin
      */
     protected function validateAdminDeletion(int $id): void
     {
@@ -271,7 +289,10 @@ class UsuarioController extends Controller
     }
 
     /**
-     * Valida y procesa la subida de imagen
+     * Valida la imagen subida
+     *
+     * @return array Datos del archivo validado
+     * @throws Exception Si la imagen no cumple requisitos
      */
     protected function validateImageUpload(): array
     {
@@ -281,13 +302,13 @@ class UsuarioController extends Controller
 
         $file = $_FILES['imagen_usuario'];
 
-        // Validar tipo de archivo
+        // Validar tipo MIME
         $allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
         if (!in_array($file['type'], $allowedTypes)) {
             throw new Exception('Formato de imagen no permitido (solo JPG, PNG o GIF)');
         }
 
-        // Validar tamaño máximo (10MB)
+        // Validar tamaño máximo
         if ($file['size'] > 10 * 1024 * 1024) {
             throw new Exception('El tamaño máximo permitido es 10MB');
         }
@@ -297,6 +318,10 @@ class UsuarioController extends Controller
 
     /**
      * Sube el archivo al servidor
+     *
+     * @param  array $fileData Datos del archivo
+     * @return string Nombre único del archivo
+     * @throws Exception Si falla la subida
      */
     protected function uploadImageFile(array $fileData): string
     {
@@ -312,7 +337,9 @@ class UsuarioController extends Controller
     }
 
     /**
-     * Elimina la imagen anterior de forma segura
+     * Elimina de forma segura la imagen anterior
+     *
+     * @param string $filename Nombre del archivo a eliminar
      */
     protected function deleteOldImage(string $filename): void
     {
@@ -320,7 +347,7 @@ class UsuarioController extends Controller
             $filePath = $this->uploadDir . basename($filename);
 
             if (file_exists($filePath) && is_file($filePath)) {
-                // Verificar que el archivo está dentro del directorio permitido
+                // Prevenir directory traversal
                 $realPath = realpath($filePath);
                 $realUploadDir = realpath($this->uploadDir);
 
@@ -332,7 +359,10 @@ class UsuarioController extends Controller
     }
 
     /**
-     * Valida y obtiene el ID de usuario
+     * Obtiene y valida el ID de usuario
+     *
+     * @return int ID validado
+     * @throws Exception Si el ID es inválido
      */
     protected function getValidatedUserId(): int
     {
@@ -342,7 +372,6 @@ class UsuarioController extends Controller
             throw new Exception('ID de usuario inválido');
         }
 
-        // Verificar que el usuario existe
         if (!$this->usuarioModel->getUsuario($id)) {
             throw new Exception('Usuario no encontrado');
         }
@@ -351,7 +380,9 @@ class UsuarioController extends Controller
     }
 
     /**
-     * Actualiza los datos de sesión del usuario
+     * Actualiza los datos de sesión
+     *
+     * @param array $data Nuevos datos del usuario
      */
     protected function updateSessionData(array $data): void
     {
@@ -361,7 +392,9 @@ class UsuarioController extends Controller
     }
 
     /**
-     * Actualiza la imagen de perfil en sesión
+     * Actualiza la imagen en la sesión
+     *
+     * @param string $filename Nuevo nombre de archivo
      */
     protected function updateSessionImage(string $filename): void
     {
@@ -371,6 +404,9 @@ class UsuarioController extends Controller
 
     /**
      * Sanitiza entradas de texto
+     *
+     * @param  string $input Entrada a sanitizar
+     * @return string Texto sanitizado
      */
     protected function sanitizeInput(string $input): string
     {
@@ -378,7 +414,11 @@ class UsuarioController extends Controller
     }
 
     /**
-     * Sanitiza direcciones de email
+     * Sanitiza y valida direcciones de email
+     *
+     * @param  string $email Email a validar
+     * @return string Email validado
+     * @throws Exception Si el email es inválido
      */
     protected function sanitizeEmail(string $email): string
     {
@@ -390,7 +430,10 @@ class UsuarioController extends Controller
     }
 
     /**
-     * Valida el método de solicitud HTTP
+     * Valida el método HTTP utilizado
+     *
+     * @param  string $expectedMethod Método esperado
+     * @throws Exception Si el método no coincide
      */
     protected function validateRequestMethod(string $expectedMethod): void
     {
@@ -420,7 +463,7 @@ class UsuarioController extends Controller
     }
 
     /**
-     * Redirección a lista de usuarios
+     * Redirecciona al listado de usuarios
      */
     protected function redirectToUsuarios(): void
     {
@@ -429,7 +472,7 @@ class UsuarioController extends Controller
     }
 
     /**
-     * Redirección a perfil de usuario
+     * Redirecciona al perfil de usuario
      */
     protected function redirectToUsuario(): void
     {

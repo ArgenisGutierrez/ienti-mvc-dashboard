@@ -3,10 +3,12 @@
 /**
  * Controlador para la gestión del Login del sistema
  * 
- * Maneja las operaciones del login y logout del sistema
- * - Login
- * - Logout
- * - Registro de usuarios
+ * Maneja las operaciones relacionadas con la autenticación de usuarios:
+ * - Login y logout de usuarios
+ * - Registro y verificación de cuentas
+ * - Recuperación y cambio de contraseñas
+ * 
+ * @package App\Controllers
  */
 
 namespace App\Controllers;
@@ -19,11 +21,18 @@ use Lib\Mailer;
 
 class LoginController extends Controller
 {
-  // Instancia del modelo Recurso
+  /**
+   * @var Usuario Instancia del modelo de Usuario
+   */
   protected $usuarioModel;
 
   /**
-   * Constructor - Inicializa dependencias y configuración
+   * @var Permiso Instancia del modelo de Permisos
+   */
+  protected $permisoModel;
+
+  /**
+   * Constructor - Inicializa los modelos necesarios
    */
   public function __construct()
   {
@@ -32,9 +41,9 @@ class LoginController extends Controller
   }
 
   /**
-   * Renderiza la vista de login
+   * Muestra la vista de login
    *
-   * @return View Vista de login
+   * @return View Vista de inicio de sesión
    */
   public function index()
   {
@@ -42,7 +51,7 @@ class LoginController extends Controller
   }
 
   /**
-   * Renderiza la vista de registro
+   * Muestra la vista de registro de usuarios
    *
    * @return View Vista de registro
    */
@@ -51,39 +60,57 @@ class LoginController extends Controller
     return $this->view('registro');
   }
 
+  /**
+   * Muestra la vista para recuperación de contraseña
+   *
+   * @return View Vista de olvidó contraseña
+   */
   public function forgetPassword()
   {
     return $this->view('forgetPassword');
   }
 
+  /**
+   * Muestra el formulario para cambiar contraseña con token de verificación
+   *
+   * @param  string $token Token de verificación para cambio de contraseña
+   * @return View Vista de cambio de contraseña
+   */
   public function formChangePassword($token)
   {
     return $this->view('changePassword', ['token' => $token]);
   }
 
   /**
-   * Logica de login
+   * Maneja el proceso de autenticación de usuarios
    *
-   * @return View Home con los datos de session
+   * @return void Redirecciona al home o muestra errores
    */
   public function login()
   {
+    // Obtener y sanitizar credenciales
     $password_usuario = $_POST['password_usuario'];
     $email = filter_var($_POST['email_usuario'] ?? '', FILTER_SANITIZE_EMAIL);
 
+    // Buscar usuario por email
     $usuario = $this->usuarioModel->getByEmail($email);
+
+    // Validaciones de usuario
     if (!$usuario) {
       Alert::error('Error', 'El usuario no existe');
       header("Location:" . APP_URL . "login");
       exit();
     }
+
     if ($usuario['estado'] != 1) {
       Alert::error('Error', 'El usuario se encuentra inactivo');
       header("Location:" . APP_URL . "login");
       exit();
     }
 
+    // Verificar contraseña
     if (password_verify($password_usuario, $usuario['password_usuario'])) {
+      // Iniciar sesión y crear variables de sesión
       session_start();
       $_SESSION['usuario_id'] = $usuario['id_usuario'];
       $_SESSION['email'] = $email;
@@ -91,9 +118,11 @@ class LoginController extends Controller
       $_SESSION['imagen'] = $usuario['imagen_usuario'];
       $_SESSION['rol'] = $usuario['id_rol'];
       $_SESSION['permisos'] = $this->permisoModel->getNombrePermisoById($usuario['id_rol']);
+
       header("Location:" . APP_URL);
       exit();
     } else {
+      // Manejar credenciales incorrectas
       session_start();
       $_SESSION['email'] = $email;
       Alert::error('Error', 'Credenciales incorrectas');
@@ -103,7 +132,9 @@ class LoginController extends Controller
   }
 
   /**
-   * Logica de logout
+   * Cierra la sesión del usuario
+   *
+   * @return void Redirecciona al login
    */
   public function logout()
   {
@@ -112,52 +143,69 @@ class LoginController extends Controller
     header("Location:" . APP_URL . "login");
     exit();
   }
+
+  /**
+   * Procesa el registro de nuevos usuarios
+   *
+   * @return void Redirecciona con mensajes de éxito/error
+   */
   public function registrarse()
   {
+    // Recoger y procesar datos del formulario
     $nombre = $_POST['nombre'];
     $email_usuario = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
     $password_usuario = $_POST['password'];
     $password_confirm = $_POST['password_confirm'];
-    $verification_token = bin2hex(random_bytes(50));
+    $verification_token = bin2hex(random_bytes(50)); // Token seguro
     $terms = $_POST['terms'];
     $fyh_creacion = date('Y-m-d H:i:s');
 
     try {
+      // Validaciones básicas
       if ($terms !== 'true') {
-        throw new Exception("No puedes registrar un usuario si no aceptas los términos y condiciones", 1);
+        throw new Exception("Debes aceptar los términos y condiciones");
       }
 
       if ($password_usuario !== $password_confirm) {
-        throw new Exception("Las contraseñas no coinciden", 1);
+        throw new Exception("Las contraseñas no coinciden");
       }
+
+      // Enviar correo de verificación
       $mailer = new Mailer();
       $data = [
         'nombre' => $nombre,
         'link' => APP_URL . "verify/" . $verification_token
       ];
-      $mail = $mailer->sendTemplate($email_usuario, "Activación de cuenta", '../resources/templates/confirm.php', $data);
+      $mail = $mailer->sendTemplate(
+        $email_usuario,
+        "Activación de cuenta",
+        '../resources/templates/confirm.php',
+        $data
+      );
+
       if (!$mail) {
-        Alert::error('Error', 'Error al enviar el correo');
-        header("Location:" . APP_URL . "registro");
-        exit();
+        throw new Exception("Error al enviar el correo de verificación");
       }
 
-      if ($this->usuarioModel->create(
+      // Crear usuario en la base de datos
+      $registro_exitoso = $this->usuarioModel->create(
         [
           'nombre_usuario' => $nombre,
           'email_usuario' => $email_usuario,
           'password_usuario' => password_hash($password_usuario, PASSWORD_DEFAULT),
           'verification_token' => $verification_token,
-          'id_rol' => 2,
+          'id_rol' => 2, // Rol por defecto (probablemente usuario normal)
           'fyh_creacion' => $fyh_creacion,
-          'estado' => '0',
+          'estado' => '0', // Cuenta inactiva hasta verificación
         ]
-      )) {
-        Alert::success('Exito', 'Registro exitoso, revisa tu correo para activar tu cuenta');
+      );
+
+      if ($registro_exitoso) {
+        Alert::success('Éxito', 'Registro exitoso, revisa tu correo para activar tu cuenta');
         header("Location:" . APP_URL . "login");
         exit();
       } else {
-        throw new Exception("Error al registrar el usuario en la db", 1);
+        throw new Exception("Error al guardar el usuario en la base de datos");
       }
     } catch (Exception $e) {
       Alert::error('Error', $e->getMessage());
@@ -166,70 +214,103 @@ class LoginController extends Controller
     }
   }
 
+  /**
+   * Verifica una cuenta usando el token de verificación
+   *
+   * @param  string $token Token de verificación
+   * @return void Redirecciona con mensajes de estado
+   */
   public function verificar($token)
   {
     $usuario = $this->usuarioModel->getByToken($token);
+
+    // Verificar si la cuenta ya está activa
     if ($usuario['estado'] == 1) {
-      Alert::info('Cuenta ya verificada', 'La cuenta ya ha sido verificada anteriormente');
+      Alert::info('Información', 'La cuenta ya está verificada');
       header("Location:" . APP_URL . "login");
       exit();
     }
 
+    // Activar cuenta
     if ($this->usuarioModel->verifyUser($usuario['id_usuario'])) {
-      Alert::success('Cuenta verificada', 'La cuenta ha sido verificada con exito');
+      Alert::success('Éxito', 'Cuenta verificada correctamente');
       header("Location:" . APP_URL . "login");
       exit();
     } else {
-      Alert::error('Error al verificar la cuenta', 'Error al verificar la cuenta en la db');
+      Alert::error('Error', 'Falló la activación de la cuenta');
       header("Location:" . APP_URL . "login");
       exit();
     }
   }
 
+  /**
+   * Maneja la solicitud de recuperación de contraseña
+   *
+   * @return void Redirecciona con mensajes de estado
+   */
   public function comprobacionCorreo()
   {
     $email_usuario = $_POST['email_usuario'];
     $usuario = $this->usuarioModel->getByEmail($email_usuario);
+
     if (!$usuario) {
-      Alert::error('Error', 'El correo no existe');
+      Alert::error('Error', 'El correo no está registrado');
       header("Location:" . APP_URL . "forgetPassword");
       exit();
     }
+
+    // Enviar correo con enlace de recuperación
     $mailer = new Mailer();
     $datos = [
       'nombre' => $usuario['nombre_usuario'],
       'link' => APP_URL . "changePassword/" . $usuario['verification_token']
     ];
-    $mail = $mailer->sendTemplate($email_usuario, "Cambio de contraseña", '../resources/templates/change.php', $datos);
-    Alert::info('Correo enviado', 'Revisa tu correo para cambiar tu contraseña');
+
+    $mailer->sendTemplate(
+      $email_usuario,
+      "Cambio de contraseña",
+      '../resources/templates/change.php',
+      $datos
+    );
+
+    Alert::info('Información', 'Revisa tu correo para continuar con el cambio de contraseña');
     header("Location:" . APP_URL . "login");
     exit();
   }
 
+  /**
+   * Actualiza la contraseña del usuario
+   *
+   * @return void Redirecciona con mensajes de estado
+   */
   public function changePassword()
   {
-    $password = $_POST['password'];
-    $password_confirm = $_POST['password_confirm'];
-    if ($password !== $password_confirm) {
-      Alert::error('Error', 'Las contraseñas no coinciden');
+    // Validar coincidencia de contraseñas
+    if ($_POST['password'] !== $_POST['password_confirm']) {
+      Alert::error('Error', 'Las contraseñas no coinciden');
       header("Location:" . APP_URL . "changePassword/" . $_POST['token']);
       exit();
     }
-    $password = password_hash($password, PASSWORD_DEFAULT);
-    $usuario = $this->usuarioModel->getByToken($_POST['token']);
-    $token = bin2hex(random_bytes(50));
-    if ($this->usuarioModel->changePassword(
+
+    // Generar nuevo hash y token
+    $nuevo_hash = password_hash($_POST['password'], PASSWORD_DEFAULT);
+    $nuevo_token = bin2hex(random_bytes(50));
+
+    // Actualizar en base de datos
+    $actualizacion = $this->usuarioModel->changePassword(
       [
-        'password_usuario' => $password,
-        'id_usuario' => $usuario['id_usuario'],
-        'token' => $token
+        'password_usuario' => $nuevo_hash,
+        'id_usuario' => $this->usuarioModel->getByToken($_POST['token'])['id_usuario'],
+        'token' => $nuevo_token // Invalida el token anterior
       ]
-    )) {
-      Alert::success('Exito', 'Contraseña cambiada con exito');
+    );
+
+    if ($actualizacion) {
+      Alert::success('Éxito', 'Contraseña actualizada correctamente');
       header("Location:" . APP_URL . "login");
       exit();
     } else {
-      Alert::error('Error', 'Error al cambiar la contraseña en la db');
+      Alert::error('Error', 'Falló la actualización de contraseña');
       header("Location:" . APP_URL . "changePassword/" . $_POST['token']);
       exit();
     }
