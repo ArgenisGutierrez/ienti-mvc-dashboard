@@ -43,17 +43,32 @@ INSERT INTO usuarios (
   'ientiadmin','1','admin@ienti.com.mx','$2y$10$BXuu1n9/MFOyETHgaS06C.V7IUKxglyGXyspBKpX1xYpx7dSS0QsW','2025-03-16 15:21:55','1'
 );
 
+-- Tabla Categorias
+CREATE TABLE categorias (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  nombre VARCHAR(50) NOT NULL
+);
+
+-- Tabla Subcategorias
+CREATE TABLE subcategorias (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  nombre VARCHAR(50) NOT NULL,
+  categoria_id INT NOT NULL,
+  FOREIGN KEY (categoria_id) REFERENCES categorias(id)
+);
+
 -- Tabla Recursos
 CREATE TABLE recursos (
   id_recurso INT (11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
   descripcion_recurso VARCHAR (255) NOT NULL,
-  clasificacion_recurso VARCHAR (255) NOT NULL,
   tipo_recurso VARCHAR (255) NOT NULL,
   contenido_recurso VARCHAR (255) NOT NULL,
 
   fyh_creacion DATETIME NULL,
   fyh_modificacion DATETIME NULL,
-  estado VARCHAR (11)
+  estado VARCHAR (11),
+  categoria_id INT NOT NULL,
+  FOREIGN KEY (categoria_id) REFERENCES categorias(id)
 )ENGINE=InnoDB;
 );
 
