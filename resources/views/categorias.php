@@ -1,8 +1,8 @@
 <?php
 session_start();
 if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
-    session_regenerate_id(true);
-    ?>
+  session_regenerate_id(true);
+?>
   <!DOCTYPE html>
   <html lang="es-MX">
 
@@ -66,7 +66,7 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                 <i class="bi bi-tags"></i>
               </div>
               <div class="page-title d-none d-md-block">
-                <h5>Categorias
+                <h5>Categorias y Subcategorias
                 </h5>
               </div>
             </div>
@@ -149,7 +149,7 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                               <td>
                                 <?php echo $categoria['nombre_categoria'] ?>
                               </td>
-                                <?php if (isset($_SESSION['permisos']) && in_array("Editar Categorias", $_SESSION['permisos'])) : ?>
+                              <?php if (isset($_SESSION['permisos']) && in_array("Editar Categorias", $_SESSION['permisos'])) : ?>
                                 <td>
                                   <!-- Botón que abre el modal específico para cada registro -->
                                   <button type="button" class="btn btn-primary editar-btn" data-bs-toggle="modal"
@@ -195,8 +195,8 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                                     </div>
                                   </div>
                                 </td>
-                                <?php endif; ?>
-                                <?php if (isset($_SESSION['permisos']) && in_array("Eliminar Categorias", $_SESSION['permisos'])) : ?>
+                              <?php endif; ?>
+                              <?php if (isset($_SESSION['permisos']) && in_array("Eliminar Categorias", $_SESSION['permisos'])) : ?>
                                 <td>
                                   <!-- Formulario para eliminar -->
                                   <form id="formEliminar<?php echo $categoria['id_categoria'] ?>" method="POST"
@@ -208,7 +208,7 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                                     </button>
                                   </form>
                                 </td>
-                                <?php endif; ?>
+                              <?php endif; ?>
                             </tr>
                           <?php } ?>
                         </tbody>
@@ -251,8 +251,8 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                                   <div class="modal-body">
                                     <!-- Campo Categoria -->
                                     <div class="mb-4">
-                                      <label for="nombre_categoria" class="form-label">Nombre de la Categoria</label>
-                                      <select class="form-select" id="nombre_categoria" name="id_categoria"
+                                      <label for="id_categoria" class="form-label">Nombre de la Categoria</label>
+                                      <select class="form-select" id="id_categoria" name="id_categoria"
                                         required>
                                         <option selected disabled value="">...</option>
                                         <?php foreach ($categorias as $categoria) : ?>
@@ -262,9 +262,9 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                                     </div>
                                     <!-- Campo Nombre -->
                                     <div class="mb-4">
-                                      <label for="nombre_categoria" class="form-label">Nombre de la Subcategoria</label>
-                                      <input type="text" class="form-control form-control-lg" id="nombre_categoria"
-                                        name="nombre_categoria" required>
+                                      <label for="nombre_subcategoria" class="form-label">Nombre de la Subcategoria</label>
+                                      <input type="text" class="form-control form-control-lg" id="nombre_subcategoria"
+                                        name="nombre_subcategoria" required>
                                     </div>
                                   </div>
                                   <div class="modal-footer">
@@ -282,7 +282,7 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                   </div>
                   <div class="card-body">
                     <div class="table-responsive">
-                      <table id="categoria_table" class="table table-hover custom-table">
+                      <table id="subcategoria_table" class="table table-hover custom-table">
                         <thead>
                           <tr>
                             <th>Categoria</th>
@@ -296,46 +296,58 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                           </tr>
                         </thead>
                         <tbody>
-                          <?php foreach ($categorias as $categoria) { ?>
+                          <?php foreach ($subcategorias as $subcategoria) { ?>
                             <tr>
                               <td>
-                                <?php echo $categoria['nombre_categoria'] ?>
+                                <?php echo $subcategoria['nombre_categoria'] ?>
                               </td>
                               <td>
-                                <?php echo $categoria['nombre_subcategoria'] ?>
+                                <?php echo $subcategoria['nombre_subcategoria'] ?>
                               </td>
-                                <?php if (isset($_SESSION['permisos']) && in_array("Editar Categorias", $_SESSION['permisos'])) : ?>
+                              <?php if (isset($_SESSION['permisos']) && in_array("Editar Categorias", $_SESSION['permisos'])) : ?>
                                 <td>
                                   <!-- Botón que abre el modal específico para cada registro -->
                                   <button type="button" class="btn btn-primary editar-btn" data-bs-toggle="modal"
-                                    data-bs-target="#editarCategoria<?php echo $categoria['id_categoria'] ?>">
+                                    data-bs-target="#editarSubcategoria<?php echo $subcategoria['id_subcategoria'] ?>">
                                     <i class="bi bi-pencil-fill"></i>
                                   </button>
                                   <!-- Modal único para cada registro -->
-                                  <div class="modal fade" id="editarCategoria<?php echo $categoria['id_categoria'] ?>" tabindex="-1"
+                                  <div class="modal fade" id="editarSubcategoria<?php echo $subcategoria['id_subcategoria'] ?>" tabindex="-1"
                                     aria-labelledby="exampleModalLabel" aria-hidden="true">
                                     <div class="modal-dialog">
                                       <div class="modal-content">
                                         <div class="modal-header">
                                           <h5 class="modal-title" id="exampleModalLabel">
                                             Editar
-                                            <?php echo $categoria['nombre_categoria'] ?>
+                                            <?php echo $subcategoria['nombre_subcategoria'] ?>
                                           </h5>
                                           <button type="button" class="btn-close" data-bs-dismiss="modal"
                                             aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
-                                          <form action="<?php echo APP_URL; ?>categorias/<?php echo $categoria['id_categoria'] ?>"
-                                            id="categoria_form" method="post" autocomplete="off" class="needs-validation"
+                                          <form action="<?php echo APP_URL; ?>subcategorias/<?php echo $subcategoria['id_subcategoria'] ?>"
+                                            id="subcategoria_form" method="post" autocomplete="off" class="needs-validation"
                                             novalidate>
                                             <input type="hidden" name="_method" value="PUT">
-
+                                            <!-- Campo Categoria -->
                                             <div class="modal-body">
+                                              <div class="mb-4">
+                                                <label for="id_categoria" class="form-label">Nombre de la Categoria</label>
+                                                <select class="form-select" id="id_categoria" name="id_categoria"
+                                                  required>
+                                                  <option disabled value="">...</option>
+                                                  <?php foreach ($categorias as $categoria) : ?>
+                                                    <option <?php echo ($categoria['id_categoria'] == ($subcategoria['id_categoria'] ?? null)) ? 'selected' : ''; ?>
+                                                      value="<?php echo $categoria['id_categoria'] ?>">
+                                                      <?php echo $categoria['nombre_categoria'] ?></option>
+                                                  <?php endforeach; ?>
+                                                </select>
+                                              </div>
                                               <!-- Campo Nombre -->
                                               <div class="mb-4">
-                                                <label for="nombre_categoria" class="form-label">Nombre de la categoria</label>
-                                                <input type="text" class="form-control form-control-lg" name="nombre_categoria"
-                                                  value="<?php echo htmlspecialchars($categoria['nombre_categoria']) ?>" required>
+                                                <label for="nombre_subcategoria" class="form-label">Nombre de la subcategoria</label>
+                                                <input type="text" class="form-control form-control-lg" name="nombre_subcategoria"
+                                                  value="<?php echo htmlspecialchars($subcategoria['nombre_subcategoria']) ?>" required>
                                               </div>
                                             </div>
 
@@ -350,8 +362,8 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                                     </div>
                                   </div>
                                 </td>
-                                <?php endif; ?>
-                                <?php if (isset($_SESSION['permisos']) && in_array("Eliminar Categorias", $_SESSION['permisos'])) : ?>
+                              <?php endif; ?>
+                              <?php if (isset($_SESSION['permisos']) && in_array("Eliminar Categorias", $_SESSION['permisos'])) : ?>
                                 <td>
                                   <!-- Formulario para eliminar -->
                                   <form id="formEliminar<?php echo $categoria['id_categoria'] ?>" method="POST"
@@ -363,7 +375,7 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                                     </button>
                                   </form>
                                 </td>
-                                <?php endif; ?>
+                              <?php endif; ?>
                             </tr>
                           <?php } ?>
                         </tbody>
@@ -451,10 +463,10 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
     <?php Lib\Alert::display(); ?>
     <script>
       $(function() {
-        const dataTableConfig = {
+        $('#categoria_table').DataTable({
           columnDefs: [{
               targets: [0],
-              width: "50%",
+              width: "90%",
               orderable: true,
               searchable: true,
               className: "columna-descripcion"
@@ -494,27 +506,62 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
               previous: "Anterior"
             }
           }
-        };
-        // Aplicar a todas las tablas con clase .table
-        $('.table').each(function() {
-          const table = $(this);
-
-          // Destruir si ya existe
-          if ($.fn.dataTable.isDataTable(table)) {
-            table.DataTable().destroy();
-          }
-
-          // Inicializar con la configuración
-          table.DataTable(dataTableConfig);
         });
-
+      });
+    </script>
+    <script>
+      $(function() {
+        $('#subcategoria_table').DataTable({
+          columnDefs: [{
+              targets: [0, 1],
+              width: "45%",
+              orderable: true,
+              searchable: true,
+              className: "columna-descripcion"
+            }
+            <?php if (isset($_SESSION['permisos']) && in_array("Editar Categorias", $_SESSION['permisos'])) : ?>, {
+                targets: [2],
+                orderable: false,
+                searchable: false,
+                className: "columna-botones"
+              }
+            <?php endif; ?>
+            <?php if (isset($_SESSION['permisos']) && in_array("Eliminar Categorias", $_SESSION['permisos'])) : ?>, {
+                targets: [<?php echo (in_array("Editar Categorias", $_SESSION["permisos"])) ? 3 : 2; ?>],
+                orderable: false,
+                searchable: false,
+                className: "columna-botones"
+              }
+            <?php endif; ?>
+          ],
+          autoWidth: false,
+          language: {
+            emptyTable: "No hay información",
+            info: "Mostrando _START_ a _END_ de _TOTAL_ Subcategorias",
+            infoEmpty: "Mostrando 0 a 0 de 0 Subcategorias",
+            infoFiltered: "(Filtrado de _MAX_ total Subcategorias)",
+            infoPostFix: "",
+            thousands: ",",
+            lengthMenu: "Mostrar _MENU_ Subcategorias",
+            loadingRecords: "Cargando...",
+            processing: "Procesando...",
+            search: "Buscador:",
+            zeroRecords: "Sin resultados encontrados",
+            paginate: {
+              first: "Primero",
+              last: "Ultimo",
+              next: "Siguiente",
+              previous: "Anterior"
+            }
+          }
+        });
       });
     </script>
   </body>
 
   </html>
-    <?php
+<?php
 } else {
-    header('Location:' . APP_URL . 'login');
-    exit();
+  header('Location:' . APP_URL . 'login');
+  exit();
 }

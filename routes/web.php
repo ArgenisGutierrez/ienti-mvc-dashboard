@@ -53,5 +53,7 @@ Route::put('/updateProfileImage', [UsuarioController::class, 'updateProfileImage
 
 /*----- Rutas de categorias ------*/
 Route::get('/categorias', [CategoriaController::class, 'index']);
+Route::post('/categorias', [CategoriaController::class, 'createCategoria']);
+Route::post('/subcategorias', [CategoriaController::class, 'createSubcategoria']);
 
 Route::dispatch();
