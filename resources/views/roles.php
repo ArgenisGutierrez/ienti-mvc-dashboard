@@ -297,7 +297,7 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
 
         <!-- App Footer start -->
         <div class="app-footer">
-          <?php include_once 'layout/footer.php'; ?>
+          <span>© ienti & manwere</span>
         </div>
         <!-- App footer end -->
 
@@ -367,33 +367,29 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
     <script>
       $(function() {
         $('#role_table').DataTable({
-          columnDefs: [
-            // Primera columna: habilita todo
-            {
+          columnDefs: [{
               targets: [0],
-              with: "80%",
+              width: "80%",
               orderable: true,
               searchable: true,
-              className: "columna-descripcion" // Restaura clase por defecto
-            },
-            <?php if (isset($_SESSION['permisos']) && in_array("Editar Roles", $_SESSION['permisos'])) : ?>,
-              {
-                targets: 1,
+              className: "columna-descripcion"
+            }
+            <?php if (isset($_SESSION['permisos']) && in_array("Editar Roles", $_SESSION['permisos'])) : ?>, {
+                targets: [1],
                 orderable: false,
                 searchable: false,
                 className: "columna-botones"
               }
             <?php endif; ?>
-            <?php if (isset($_SESSION['permisos']) && in_array("Eliminar Roles", $_SESSION['permisos'])) : ?>,
-              {
-                targets: <?php echo (in_array("Editar Roles", $_SESSION['permisos'])) ? 2 : 1; ?>,
+            <?php if (isset($_SESSION['permisos']) && in_array("Eliminar Roles", $_SESSION['permisos'])) : ?>, {
+                targets: [<?php echo (in_array("Editar Roles", $_SESSION["permisos"])) ? 2 : 1; ?>],
                 orderable: false,
                 searchable: false,
                 className: "columna-botones"
               }
             <?php endif; ?>
           ],
-          autoWidth: false, // Desactiva el ajuste automático
+          autoWidth: false,
           language: {
             emptyTable: "No hay información",
             info: "Mostrando _START_ a _END_ de _TOTAL_ Roles",
