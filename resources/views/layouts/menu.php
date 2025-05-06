@@ -34,6 +34,12 @@
             </a>
           </li>
         <?php endif; ?>
+        <li>
+          <a href="<?php echo APP_URL; ?>categorias">
+            <i class="bi bi-tags"></i>
+            <span class="menu-text">Categorias</span>
+          </a>
+        </li>
       </ul>
     </div>
   </div>
