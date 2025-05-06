@@ -15,6 +15,7 @@
 namespace App\Controllers;
 
 use App\Models\Recurso;
+use App\Models\Categoria;
 use Exception;
 use Lib\Alert;
 
@@ -24,6 +25,7 @@ class RecursoController extends Controller
      * @var Recurso Instancia del modelo de Recursos
      */
     protected $recursoModel;
+    protected $categoriaModel;
 
     /**
      * @var string Directorio para almacenamiento de archivos subidos
@@ -36,6 +38,7 @@ class RecursoController extends Controller
     public function __construct()
     {
         $this->recursoModel = new Recurso();
+        $this->categoriaModel = new Categoria();
         $this->uploadDir = $_SERVER['DOCUMENT_ROOT'] . '/files/'; // Configura ruta absoluta
         $this->createUploadDir(); // Asegura que exista el directorio
     }
@@ -48,7 +51,9 @@ class RecursoController extends Controller
     public function index()
     {
         $recursos = $this->recursoModel->getAllRecursos();
-        return $this->view('recursos', ['recursos' => $recursos]);
+        $categorias = $this->categoriaModel->getAllCategorias();
+        $subcategorias = $this->categoriaModel->getAllSubcategorias();
+        return $this->view('recursos', ['recursos' => $recursos, 'categorias' => $categorias, 'subcategorias' => $subcategorias]);
     }
 
     /**
@@ -71,7 +76,7 @@ class RecursoController extends Controller
             }
 
             // Validación de campos requeridos
-            $this->validateRequiredFields($_POST, ['descripcion_recurso', 'clasificacion_recurso', 'tipo_recurso']);
+            $this->validateRequiredFields($_POST, ['descripcion_recurso', 'id_subcategoria', 'tipo_recurso']);
 
             // Preparar y validar datos
             $data = $this->prepareData();
@@ -191,11 +196,18 @@ class RecursoController extends Controller
     protected function prepareData()
     {
         $tipo = $_POST['tipo_recurso'];
+        if ($tipo !== 'Archivo') {
+            $url = $_POST['contenido_recurso'];
+            // Corregir "https:" -> "https://"
+            $url = preg_replace('/^https?:/', '$0//', $url);
+
+            $_POST['contenido_recurso'] = $url;
+        }
         $contenido = $this->handleContent($tipo);
 
         return [
         'descripcion_recurso' => $_POST['descripcion_recurso'],
-        'clasificacion_recurso' => $_POST['clasificacion_recurso'],
+        'id_subcategoria' => $_POST['id_subcategoria'],
         'tipo_recurso' => $tipo,
         'estado' => '1', // Estado activo por defecto
         'contenido_recurso' => $contenido,

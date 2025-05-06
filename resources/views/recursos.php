@@ -142,7 +142,7 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                                 </div>
                                 <div class="col-md-12" id="materialField" hidden>
                                   <label for="contenido_recurso" class="form-label" id="materialLabel"></label>
-                                  <input type="text" class="form-control" id="contenido_recurso"
+                                  <input type="url" class="form-control" id="contenido_recurso"
                                     name="contenido_recurso" required />
                                 </div>
                                 <div class="modal-footer">
@@ -221,7 +221,7 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                                                     case 'URL':
                                                         ?>
                                                       <a target="_blank" href="<?php echo $recurso['contenido_recurso']; ?>"
-                                                        download="<?php echo $recurso['contenido_recurso'] ?>" type="button"
+                                                        type="button"
                                                         class="btn btn-info editar-btn">
                                                         <i class="bi bi-link-45deg"></i>
                                                       </a>

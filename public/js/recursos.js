@@ -12,7 +12,7 @@ $(document).ready(function() {
 
       if (tipo === "URL" || tipo === "Video") {
         materialLabel.textContent = tipo === "URL" ? "URL" : "URL";
-        materialInput.type = "text";
+        materialInput.type = "url";
         materialInput.setAttribute("required", "true");
       } else if (tipo === "Archivo") {
         materialLabel.textContent = "Archivo";
