@@ -1,8 +1,8 @@
 <?php
 session_start();
 if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
-    session_regenerate_id(true);
-    ?>
+  session_regenerate_id(true);
+?>
   <!DOCTYPE html>
   <html lang="es-MX">
 
@@ -86,8 +86,7 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                     <div class="card-title">Recursos</div>
                     <div class="card-title">
                       <?php if (isset($_SESSION['permisos']) && in_array("Crear Recursos", $_SESSION['permisos'])) : ?>
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                          data-bs-target="#exampleModal">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
                           + Recurso
                         </button>
                       <?php endif; ?>
@@ -100,13 +99,8 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                               <h5 class="modal-title" id="exampleModalLabel">
                                 Nuevo Recurso
                               </h5>
-                              <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                aria-label="Close"></button>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                            <script>
-                              // Convertir subcategorías PHP a JavaScript
-                              const subcategoriasData = <?php echo json_encode($subcategorias); ?>;
-                            </script>
                             <div class="modal-body">
                               <form action="<?php echo APP_URL; ?>recursos" id="recurso_form" method="post"
                                 autocomplete="off" class="row g-3 needs-validation" enctype="multipart/form-data"
@@ -121,7 +115,9 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                                   <select class="form-select" id="categoria_recurso" name="id_categoria" required>
                                     <option selected disabled value="">...</option>
                                     <?php foreach ($categorias as $categoria): ?>
-                                      <option value="<?php echo $categoria['id_categoria'] ?>"><?php echo $categoria['nombre_categoria'] ?></option>
+                                      <option value="<?php echo $categoria['id_categoria'] ?>">
+                                        <?php echo $categoria['nombre_categoria'] ?>
+                                      </option>
                                     <?php endforeach ?>
                                   </select>
                                 </div>
@@ -142,8 +138,8 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                                 </div>
                                 <div class="col-md-12" id="materialField" hidden>
                                   <label for="contenido_recurso" class="form-label" id="materialLabel"></label>
-                                  <input type="url" class="form-control" id="contenido_recurso"
-                                    name="contenido_recurso" required />
+                                  <input type="url" class="form-control" id="contenido_recurso" name="contenido_recurso"
+                                    required />
                                 </div>
                                 <div class="modal-footer">
                                   <button type="submit" class="btn btn-primary" value="add" name="action">
@@ -169,13 +165,11 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                       <div class="card-body p-0">
                         <div class="accordion" id="accordionCat<?php echo $categoria['id_categoria'] ?>">
                           <?php foreach ($subcategorias as $subcategoria): ?>
-                                <?php if ($subcategoria['id_categoria'] == $categoria['id_categoria']) : ?>
+                            <?php if ($subcategoria['id_categoria'] == $categoria['id_categoria']) : ?>
                               <!-- Ítem del acordeón -->
                               <div class="accordion-item border-bottom"> <!-- Borde inferior -->
                                 <h2 class="accordion-header">
-                                  <button class="accordion-button collapsed py-3"
-                                    type="button"
-                                    data-bs-toggle="collapse"
+                                  <button class="accordion-button collapsed py-3" type="button" data-bs-toggle="collapse"
                                     data-bs-target="#collapse<?php echo $subcategoria['id_subcategoria'] ?>"
                                     aria-expanded="false"
                                     aria-controls="collapse<?php echo $subcategoria['id_subcategoria'] ?>">
@@ -206,49 +200,48 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                                         </thead>
                                         <tbody>
                                           <?php foreach ($recursos as $recurso) {
-                                                if ($recurso['id_subcategoria'] == $subcategoria['id_subcategoria']) {
-                                                    ?>
+                                            if ($recurso['id_subcategoria'] == $subcategoria['id_subcategoria']) {
+                                          ?>
                                               <tr>
                                                 <td>
-                                                    <?php echo $recurso['descripcion_recurso'] ?>
+                                                  <?php echo $recurso['descripcion_recurso'] ?>
                                                 </td>
                                                 <td>
-                                                    <?php echo $recurso['fyh_creacion'] ?>
+                                                  <?php echo $recurso['fyh_creacion'] ?>
                                                 </td>
                                                 <td>
-                                                    <?php
-                                                      switch ($recurso['tipo_recurso']) {
+                                                  <?php
+                                                  switch ($recurso['tipo_recurso']) {
                                                     case 'URL':
-                                                        ?>
+                                                  ?>
                                                       <a target="_blank" href="<?php echo $recurso['contenido_recurso']; ?>"
-                                                        type="button"
-                                                        class="btn btn-info editar-btn">
+                                                        type="button" class="btn btn-info editar-btn">
                                                         <i class="bi bi-link-45deg"></i>
                                                       </a>
-                                                        <?php
-                                                        break;
+                                                    <?php
+                                                      break;
                                                     case 'Archivo':
-                                                        ?>
+                                                    ?>
                                                       <a target="_blank" href="<?php echo APP_URL . 'files/' .
                                                                                   $recurso['contenido_recurso']; ?>"
                                                         type="button" class="btn
                                         btn-info editar-btn">
                                                         <i class="bi bi-cloud-arrow-down-fill"></i>
                                                       </a>
-                                                        <?php
-                                                        break;
+                                                    <?php
+                                                      break;
                                                     default:
-                                                        ?>
+                                                    ?>
                                                       <a target="_blank" href="<?php echo $recurso['contenido_recurso'] ?>"
                                                         type="button" class="btn btn-info editar-btn">
                                                         <i class="bi bi-film"></i>
                                                       </a>
-                                                        <?php
-                                                        break;
-                                                      }
-                                                        ?>
+                                                  <?php
+                                                      break;
+                                                  }
+                                                  ?>
                                                 </td>
-                                                    <?php if (isset($_SESSION['permisos']) && in_array("Editar Recursos", $_SESSION['permisos'])) : ?>
+                                                <?php if (isset($_SESSION['permisos']) && in_array("Editar Recursos", $_SESSION['permisos'])) : ?>
                                                   <td>
                                                     <!-- Botón que abre el modal específico para cada registro -->
                                                     <button type="button" class="btn btn-primary editar-btn" data-bs-toggle="modal"
@@ -294,35 +287,43 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                                                               </div>
 
                                                               <div class="col-md-12">
-                                                                <label for="editar_clasificacion"
-                                                                  class="form-label">Clasificación</label>
-                                                                <select class="form-select" id="editar_clasificacion"
-                                                                  name="clasificacion_recurso" required>
-                                                                  <?php
-                                                                    $clasificaciones = [
-                                                                    'Material Normativo',
-                                                                    'Material Relativo a Capacitación',
-                                                                    'Material Complementario'
-                                                                    ];
-                                                                    foreach ($clasificaciones as $clasif) {
-                                                                        $selected = $recurso['clasificacion_recurso'] == $clasif ? 'selected' : '';
-                                                                        echo "<option value='$clasif' $selected>$clasif</option>";
-                                                                    }
-                                                                    ?>
+                                                                <label for="editar_categoria_<?php echo $recurso['id_recurso'] ?>" class="form-label">Categoría</label>
+                                                                <select class="form-select editar-categoria"
+                                                                  id="editar_categoria_<?php echo $recurso['id_recurso'] ?>"
+                                                                  name="id_categoria"
+                                                                  required
+                                                                  data-recurso-id="<?php echo $recurso['id_recurso'] ?>">
+                                                                  <option disabled value="">...</option>
+                                                                  <?php foreach ($categorias as $selectCategoria): ?>
+                                                                    <option value="<?php echo $selectCategoria['id_categoria'] ?>"
+                                                                      <?php echo ($selectCategoria['id_categoria'] == $recurso['id_categoria']) ? 'selected' : '' ?>>
+                                                                      <?php echo $selectCategoria['nombre_categoria'] ?>
+                                                                    </option>
+                                                                  <?php endforeach ?>
                                                                 </select>
                                                               </div>
 
+                                                              <div class="col-md-12">
+                                                                <label for="editar_subcategoria_<?php echo $recurso['id_recurso'] ?>" class="form-label">Subcategoría</label>
+                                                                <select class="form-select editar-subcategoria"
+                                                                  id="editar_subcategoria_<?php echo $recurso['id_recurso'] ?>"
+                                                                  name="id_subcategoria"
+                                                                  required
+                                                                  data-recurso-id="<?php echo $recurso['id_recurso'] ?>">
+                                                                  <!-- opciones iniciales... -->
+                                                                </select>
+                                                              </div>
                                                               <div class="col-md-12">
                                                                 <label for="editar_tipo" class="form-label">Tipo</label>
                                                                 <select class="form-select" id="editar_tipo" name="tipo_recurso"
                                                                   required data-id="<?php echo $recurso['id_recurso'] ?>">
                                                                   <?php
-                                                                    $tipos = ['URL', 'Archivo', 'Video'];
-                                                                    foreach ($tipos as $tipo) {
-                                                                        $selected = $recurso['tipo_recurso'] == $tipo ? 'selected' : '';
-                                                                        echo "<option value='$tipo' $selected>$tipo</option>";
-                                                                    }
-                                                                    ?>
+                                                                  $tipos = ['URL', 'Archivo', 'Video'];
+                                                                  foreach ($tipos as $tipo) {
+                                                                    $selected = $recurso['tipo_recurso'] == $tipo ? 'selected' : '';
+                                                                    echo "<option value='$tipo' $selected>$tipo</option>";
+                                                                  }
+                                                                  ?>
                                                                 </select>
                                                               </div>
 
@@ -369,8 +370,8 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                                                       </div>
                                                     </div>
                                                   </td>
-                                                    <?php endif; ?>
-                                                    <?php if (isset($_SESSION['permisos']) && in_array("Eliminar Recursos", $_SESSION['permisos'])) : ?>
+                                                <?php endif; ?>
+                                                <?php if (isset($_SESSION['permisos']) && in_array("Eliminar Recursos", $_SESSION['permisos'])) : ?>
                                                   <td>
                                                     <!-- Formulario para eliminar -->
                                                     <form id="formEliminar<?php echo $recurso['id_recurso'] ?>" method="POST"
@@ -381,10 +382,10 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                                                       </button>
                                                     </form>
                                                   </td>
-                                                    <?php endif; ?>
+                                                <?php endif; ?>
                                               </tr>
-                                                    <?php
-                                                }
+                                          <?php
+                                            }
                                           } ?>
                                         </tbody>
                                       </table>
@@ -393,7 +394,7 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                                   </div>
                                 </div>
                               </div>
-                                <?php endif; ?>
+                            <?php endif; ?>
                           <?php endforeach; ?>
                         </div>
                       </div>
@@ -554,45 +555,82 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
       </script>
       <script>
         document.addEventListener('DOMContentLoaded', function() {
-          const categoriaSelect = document.getElementById('categoria_recurso');
-          const subcategoriaSelect = document.getElementById('subcategoria_recurso');
+          // Datos de subcategorías desde PHP
+          const subcategoriasData = <?php echo json_encode($subcategorias); ?>;
 
-          function actualizarSubcategorias() {
+          // Configuración inicial para creación
+          const categoriaCreate = document.getElementById('categoria_recurso');
+          const subcategoriaCreate = document.getElementById('subcategoria_recurso');
+
+          // Función universal para actualizar subcategorías
+          function actualizarSubcategorias(categoriaSelect, subcategoriaSelect) {
             const categoriaId = categoriaSelect.value;
+            const currentSub = subcategoriaSelect.dataset.currentSub || null;
 
-            // Limpiar select
-            subcategoriaSelect.innerHTML = '<option selected disabled value="">...</option>';
+            // Limpiar y crear nuevas opciones
+            subcategoriaSelect.innerHTML = '<option disabled value="">...</option>';
+            subcategoriasData
+              .filter(sub => sub.id_categoria == categoriaId)
+              .forEach(sub => {
+                const option = new Option(sub.nombre_subcategoria, sub.id_subcategoria);
+                option.selected = (currentSub && sub.id_subcategoria == currentSub);
+                subcategoriaSelect.appendChild(option);
+              });
 
-            // Filtrar subcategorías
-            const subcategoriasFiltradas = subcategoriasData.filter(
-              sub => sub.id_categoria == categoriaId
-            );
-
-            // Llenar opciones
-            subcategoriasFiltradas.forEach(sub => {
-              const option = new Option(sub.nombre_subcategoria, sub.id_subcategoria);
-              subcategoriaSelect.add(option);
-            });
-
-            // Habilitar/validar
             subcategoriaSelect.disabled = !categoriaId;
             subcategoriaSelect.required = !!categoriaId;
           }
 
-          // Event listeners
-          categoriaSelect.addEventListener('change', actualizarSubcategorias);
+          // Eventos para creación
+          if (categoriaCreate && subcategoriaCreate) {
+            categoriaCreate.addEventListener('change', () => {
+              actualizarSubcategorias(categoriaCreate, subcategoriaCreate);
+            });
 
-          // Actualizar al cargar si ya hay un valor seleccionado (en caso de edición)
-          actualizarSubcategorias();
+            // Inicializar al cargar si hay valor
+            if (categoriaCreate.value) {
+              actualizarSubcategorias(categoriaCreate, subcategoriaCreate);
+            }
+          }
+
+          // Manejador universal para edición
+          document.addEventListener('change', function(e) {
+            // Detectar cambios en categorías de edición
+            if (e.target.matches('.editar-categoria')) {
+              const recursoId = e.target.dataset.recursoId;
+              const subcategoriaEdit = document.getElementById(`editar_subcategoria_${recursoId}`);
+
+              if (subcategoriaEdit) {
+                // Obtener subcategoría actual del dataset
+                subcategoriaEdit.dataset.currentSub = document.querySelector(
+                  `#editar_subcategoria_${recursoId} option[selected]`
+                )?.value;
+
+                actualizarSubcategorias(e.target, subcategoriaEdit);
+              }
+            }
+          });
+
+          // Inicializar subcategorías al abrir modales de edición
+          document.querySelectorAll('.editar-categoria').forEach(select => {
+            const recursoId = select.dataset.recursoId;
+            const subcategoriaEdit = document.getElementById(`editar_subcategoria_${recursoId}`);
+
+            if (subcategoriaEdit) {
+              // Establecer valor actual desde el option seleccionado
+              subcategoriaEdit.dataset.currentSub = subcategoriaEdit.querySelector('option[selected]')?.value;
+              actualizarSubcategorias(select, subcategoriaEdit);
+            }
+          });
         });
       </script>
 
   </body>
 
   </html>
-    <?php
+<?php
 } else {
-    header('Location:' . APP_URL . 'login');
-    exit();
+  header('Location:' . APP_URL . 'login');
+  exit();
 }
 ?>
