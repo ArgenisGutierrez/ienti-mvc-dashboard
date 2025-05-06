@@ -366,10 +366,10 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                               <?php if (isset($_SESSION['permisos']) && in_array("Eliminar Categorias", $_SESSION['permisos'])) : ?>
                                 <td>
                                   <!-- Formulario para eliminar -->
-                                  <form id="formEliminar<?php echo $categoria['id_categoria'] ?>" method="POST"
-                                    action="<?php echo APP_URL; ?>categorias/<?php echo $categoria['id_categoria'] ?>">
+                                  <form id="formEliminar<?php echo $subcategoria['id_subcategoria'] ?>" method="POST"
+                                    action="<?php echo APP_URL; ?>subcategorias/<?php echo $subcategoria['id_subcategoria'] ?>">
                                     <input type="hidden" name="_method" value="DELETE">
-                                    <input type="hidden" name="id_categoria" value="<?php echo $categoria['id_categoria'] ?>">
+                                    <input type="hidden" name="id_subcategoria" value="<?php echo $subcategoria['id_subcategoria'] ?>">
                                     <button type="submit" class="btn btn-danger">
                                       <i class="bi bi-trash-fill"></i>
                                     </button>

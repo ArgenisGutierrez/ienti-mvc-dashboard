@@ -55,5 +55,9 @@ Route::put('/updateProfileImage', [UsuarioController::class, 'updateProfileImage
 Route::get('/categorias', [CategoriaController::class, 'index']);
 Route::post('/categorias', [CategoriaController::class, 'createCategoria']);
 Route::post('/subcategorias', [CategoriaController::class, 'createSubcategoria']);
+Route::put('/categorias/:id', [CategoriaController::class, 'updateCategoria']);
+Route::put('/subcategorias/:id', [CategoriaController::class, 'updateSubcategoria']);
+Route::delete('/categorias/:id', [CategoriaController::class, 'deleteCategoria']);
+Route::delete('/subcategorias/:id', [CategoriaController::class, 'deleteSubcategoria']);
 
 Route::dispatch();
