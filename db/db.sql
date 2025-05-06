@@ -45,16 +45,16 @@ INSERT INTO usuarios (
 
 -- Tabla Categorias
 CREATE TABLE categorias (
-  id INT PRIMARY KEY AUTO_INCREMENT,
-  nombre VARCHAR(50) NOT NULL
+  id_categoria INT PRIMARY KEY AUTO_INCREMENT,
+  nombre_categoria VARCHAR(50) NOT NULL
 );
 
 -- Tabla Subcategorias
 CREATE TABLE subcategorias (
-  id INT PRIMARY KEY AUTO_INCREMENT,
-  nombre VARCHAR(50) NOT NULL,
-  categoria_id INT NOT NULL,
-  FOREIGN KEY (categoria_id) REFERENCES categorias(id)
+  id_subcategoria INT PRIMARY KEY AUTO_INCREMENT,
+  nombre_subcategoria VARCHAR(50) NOT NULL,
+  id_categoria INT NOT NULL,
+  FOREIGN KEY (id_categoria) REFERENCES categorias(id_categoria)
 );
 
 -- Tabla Recursos
@@ -67,8 +67,8 @@ CREATE TABLE recursos (
   fyh_creacion DATETIME NULL,
   fyh_modificacion DATETIME NULL,
   estado VARCHAR (11),
-  categoria_id INT NOT NULL,
-  FOREIGN KEY (categoria_id) REFERENCES categorias(id)
+  id_categoria INT NOT NULL,
+  FOREIGN KEY (id_categoria) REFERENCES categorias(id_categoria)
 )ENGINE=InnoDB;
 );
 
@@ -111,3 +111,31 @@ VALUES
     ('Ver Recursos', 'Permite ver recursos disponibles en el sistema'),
     ('Editar Recursos', 'Permite acceder a la edición de un recurso'),
     ('Eliminar Recursos', 'Permite eliminar un recurso permanentemente');
+
+-- Permisos para Categorias
+INSERT INTO permisos (nombre_permiso, descripcion_permiso) 
+VALUES
+    ('Crear Categorias', 'Permite agregar nuevas categorias al sistema'),
+    ('Ver Categorias', 'Permite ver categorias disponibles en el sistema'),
+    ('Editar Categorias', 'Permite acceder a la edición de una categorias'),
+    ('Eliminar Categorias', 'Permite eliminar una categorias permanentemente');
+
+-- Permisos para ADMINISTRADOR
+INSERT INTO role_permiso (id_rol, id_permiso)
+VALUES
+  (1,1),
+  (1,2),
+  (1,3),
+  (1,4),
+  (1,5),
+  (1,6),
+  (1,7),
+  (1,8),
+  (1,9),
+  (1,10),
+  (1,11),
+  (1,12),
+  (1,13),
+  (1,14),
+  (1,15),
+  (1,16);
