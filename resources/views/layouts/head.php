@@ -27,7 +27,7 @@
             <?php echo $_SESSION['nombre'] ?>
           </span>
           <span class="avatar">
-            <img src="<?php echo !empty($_SESSION['imagen']) ? 'files/' . $_SESSION['imagen'] : 'images/users.svg'; ?>" alt="User Avatar" />
+            <img src="<?php echo !empty($_SESSION['imagen']) ? 'files/' . $_SESSION['imagen'] : 'images/escudo.png'; ?>" alt="User Avatar" />
             <span class="status online"></span>
           </span>
         </a>
