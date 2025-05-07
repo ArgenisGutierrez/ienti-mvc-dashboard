@@ -54,13 +54,13 @@ VALUES
 -- Tabla Categorias
 CREATE TABLE categorias (
   id_categoria INT PRIMARY KEY AUTO_INCREMENT,
-  nombre_categoria VARCHAR(50) NOT NULL
+  nombre_categoria VARCHAR(255) NOT NULL
 );
 
 -- Tabla Subcategorias
 CREATE TABLE subcategorias (
   id_subcategoria INT PRIMARY KEY AUTO_INCREMENT,
-  nombre_subcategoria VARCHAR(50) NOT NULL,
+  nombre_subcategoria VARCHAR(255) NOT NULL,
   id_categoria INT NOT NULL,
   FOREIGN KEY (id_categoria) REFERENCES categorias (id_categoria)
 );
@@ -81,7 +81,7 @@ CREATE TABLE recursos (
 -- Tabla de permisos
 CREATE TABLE permisos (
   id_permiso INT PRIMARY KEY AUTO_INCREMENT,
-  nombre_permiso VARCHAR(50) UNIQUE NOT NULL,
+  nombre_permiso VARCHAR(255) UNIQUE NOT NULL,
   descripcion_permiso VARCHAR(255)
 );
 

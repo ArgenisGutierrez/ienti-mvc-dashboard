@@ -162,6 +162,7 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                           <?php echo $categoria['nombre_categoria'] ?>:
                         </div>
                       </div>
+                      <hr>
                       <div class="card-body p-0">
                         <div class="accordion" id="accordionCat<?php echo $categoria['id_categoria'] ?>">
                           <?php foreach ($subcategorias as $subcategoria): ?>
