@@ -6,15 +6,39 @@ use App\Models\Categoria;
 use Exception;
 use Lib\Alert;
 
+/**
+ * Controlador para gestión de categorías y subcategorías
+ * 
+ * Maneja las operaciones CRUD para categorías y subcategorías,
+ * incluyendo validaciones de permisos y reglas de negocio.
+ * 
+ * @package App\Controllers
+ * @extends Controller
+ */
 class CategoriaController extends Controller
 {
+    /**
+     * Instancia del modelo Categoria
+     *
+     * @var Categoria
+     */
     private $categoriaModel;
 
+    /**
+     * Constructor - Inicializa el modelo de categorías
+     */
     public function __construct()
     {
         $this->categoriaModel = new Categoria();
     }
 
+    /**
+     * Muestra la vista principal con listado de categorías y subcategorías
+     * 
+     * @return void Renderiza la vista 'categorias' con:
+     *              - categorias: Listado completo de categorías
+     *              - subcategorias: Listado completo con relaciones
+     */
     public function index()
     {
         return $this->view(
@@ -26,6 +50,16 @@ class CategoriaController extends Controller
         );
     }
 
+    /**
+     * Crea una nueva categoría
+     * 
+     * @throws Exception Si:
+     *             - No es método POST
+     *             - Sin permisos requeridos
+     *             - Campos vacíos
+     *             - Error en modelo
+     * @return void Redirige a categorías con mensaje flash
+     */
     public function createCategoria()
     {
         try {
@@ -54,6 +88,16 @@ class CategoriaController extends Controller
         $this->redirectToCategorias();
     }
 
+    /**
+     * Crea una nueva subcategoría
+     * 
+     * @throws Exception Si:
+     *             - No es método POST
+     *             - Sin permisos requeridos
+     *             - Campos vacíos
+     *             - Error en modelo
+     * @return void Redirige a categorías con mensaje flash
+     */
     public function createSubcategoria()
     {
         try {
@@ -83,6 +127,17 @@ class CategoriaController extends Controller
         $this->redirectToCategorias();
     }
 
+    /**
+     * Actualiza una categoría existente
+     * 
+     * @param  int $id_categoria ID de la categoría a actualizar
+     * @throws Exception Si:
+     *             - No es método POST
+     *             - Sin permisos requeridos
+     *             - Campos vacíos
+     *             - Error en modelo
+     * @return void Redirige a categorías con mensaje flash
+     */
     public function updateCategoria($id_categoria)
     {
         try {
@@ -116,6 +171,17 @@ class CategoriaController extends Controller
         $this->redirectToCategorias();
     }
 
+    /**
+     * Actualiza una subcategoría existente
+     * 
+     * @param  int $id_subcategoria ID de la subcategoría a actualizar
+     * @throws Exception Si:
+     *             - No es método POST
+     *             - Sin permisos requeridos
+     *             - Campos vacíos
+     *             - Error en modelo
+     * @return void Redirige a categorías con mensaje flash
+     */
     public function updateSubcategoria($id_subcategoria)
     {
         try {
@@ -150,6 +216,17 @@ class CategoriaController extends Controller
         $this->redirectToCategorias();
     }
 
+    /**
+     * Elimina una categoría
+     * 
+     * @param  int $id_categoria ID de la categoría a eliminar
+     * @throws Exception Si:
+     *             - No es método POST
+     *             - Sin permisos requeridos
+     *             - Tiene subcategorías asociadas
+     *             - Error en modelo
+     * @return void Redirige a categorías con mensaje flash
+     */
     public function deleteCategoria($id_categoria)
     {
         try {
@@ -181,6 +258,17 @@ class CategoriaController extends Controller
         $this->redirectToCategorias();
     }
 
+    /**
+     * Elimina una subcategoría
+     * 
+     * @param  int $id_subcategoria ID de la subcategoría a eliminar
+     * @throws Exception Si:
+     *             - No es método POST
+     *             - Sin permisos requeridos
+     *             - Tiene recursos asociados
+     *             - Error en modelo
+     * @return void Redirige a categorías con mensaje flash
+     */
     public function deleteSubcategoria($id_subcategoria)
     {
         try {
@@ -211,6 +299,13 @@ class CategoriaController extends Controller
         }
         $this->redirectToCategorias();
     }
+
+    /**
+     * Método interno para redirección
+     *
+     * @access protected
+     * @return void
+     */
     protected function redirectToCategorias()
     {
         header("Location: " . APP_URL . "categorias");
