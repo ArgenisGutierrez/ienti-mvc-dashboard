@@ -1,4 +1,17 @@
 <?php
+
+/**
+ * Vista de administración de roles y permisos
+ * 
+ * @category Vistas
+ * @package  Auth
+ * 
+ * @uses \Lib\Alert Para mostrar notificaciones
+ * @see  \App\Controllers\RoleController Controlador asociado
+ * 
+ * @var array $roles Listado de roles desde controlador
+ * @var array $permisos Listado completo de permisos disponibles
+ */
 session_start();
 if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
   session_regenerate_id(true);
@@ -7,19 +20,21 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
   <html lang="es-MX">
 
   <head>
+    <!-- Meta -->
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Titulo Dinamico -->
     <title>
       <?php echo APP_NAME; ?>
     </title>
 
-    <!-- Meta -->
+    <!-- Favicon -->
     <link rel="shortcut icon" href="images/icon.ico" />
 
     <!-- *************
-            ************ Common Css Files *************
-        ************ -->
-    <!-- Bootstrap css -->
+         Hojas de estilo 
+         ************* -->
+    <!-- Bootstrap core -->
     <link rel="stylesheet" href="css/bootstrap.min.css" />
 
     <!-- Bootstrap font icons css -->
@@ -29,7 +44,7 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
     <link rel="stylesheet" href="css/main.min.css" />
 
     <!-- *************
-            ************ Vendor Css Files *************
+        Vendor Css Files 
         ************ -->
 
     <!-- Scrollbar CSS -->
@@ -341,7 +356,17 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
     <!-- sweetalert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    <!-- Lib Alert -->
+    <?php Lib\Alert::display(); ?>
+
+    <!-- *************
+         Scripts 
+         ************* -->
     <script>
+      /**
+       * Confirmación de eliminación con SweetAlert2
+       * @listens submit
+       */
       $(document).on('submit', 'form[id^="formEliminar"]', function(e) {
         console.log("Formulario enviado"); // ¿Aparece esto en la consola?
         e.preventDefault();
@@ -363,8 +388,11 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
         });
       });
     </script>
-    <?php Lib\Alert::display(); ?>
     <script>
+      /**
+       * Configuración de DataTable para roles
+       * @function
+       */
       $(function() {
         $('#role_table').DataTable({
           columnDefs: [{

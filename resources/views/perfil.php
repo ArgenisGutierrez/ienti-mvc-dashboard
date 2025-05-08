@@ -18,8 +18,8 @@ session_start();
 
 // Verificación de sesión activa
 if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
-    session_regenerate_id(true); // Seguridad contra fixation attacks
-    ?>
+  session_regenerate_id(true); // Seguridad contra fixation attacks
+?>
   <!DOCTYPE html>
   <html lang="es-MX">
 
@@ -66,6 +66,9 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
 
         <!-- Sección de perfil -->
         <div class="content-wrapper">
+          <div class="subscribe-header">
+            <img src="images/bg.png" class="img-fluid w-100" alt="Header" style="max-height: 285px; object-fit: fill;" />
+          </div>
           <div class="subscriber-body">
             <!-- Header del perfil -->
             <div class="row align-items-end">
@@ -243,9 +246,9 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
   </body>
 
   </html>
-    <?php
+<?php
 } else {
-    header('Location:' . APP_URL . 'login');
-    exit();
+  header('Location:' . APP_URL . 'login');
+  exit();
 }
 ?>

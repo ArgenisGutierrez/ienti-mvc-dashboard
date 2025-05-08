@@ -1,73 +1,105 @@
+<?php
+
+/**
+ * Vista para restablecimiento de contraseña mediante token
+ * 
+ * @category Vistas
+ * @package  Auth
+ * 
+ * @uses \Lib\Alert Para mostrar notificaciones
+ * @see  \App\Controllers\AuthController Controlador asociado
+ * 
+ * @var string $token Token de verificación para el restablecimiento
+ */
+?>
 <!DOCTYPE html>
 <html lang="es-MX">
 
 <head>
-  <!-- Required meta tags -->
+  <!-- Metadatos esenciales -->
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
-  <!-- Meta -->
-  <link rel="shortcut icon" href="<?php echo APP_URL;?>images/icon.ico" />
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="<?php echo APP_URL; ?>images/icon.ico" />
 
-  <!-- Title -->
-  <title>
-    <?php echo APP_NAME?>
-  </title>
+  <!-- Título dinámico -->
+  <title><?php echo APP_NAME ?></title>
 
   <!-- *************
-            ************ Common Css Files *************
-        ************ -->
-  <!-- Bootstrap css -->
-  <link rel="stylesheet" href="<?php echo APP_URL;?>css/bootstrap.min.css" />
+         Hojas de estilo 
+         ************* -->
+  <!-- Bootstrap core -->
+  <link rel="stylesheet" href="<?php echo APP_URL; ?>css/bootstrap.min.css" />
 
-  <!-- Bootstrap font icons css -->
-  <link rel="stylesheet" href="<?php echo APP_URL;?>fonts/bootstrap/bootstrap-icons.css" />
+  <!-- Iconos Bootstrap -->
+  <link rel="stylesheet" href="<?php echo APP_URL; ?>fonts/bootstrap/bootstrap-icons.css" />
 
-  <!-- Main css -->
-  <link rel="stylesheet" href="<?php echo APP_URL;?>css/main.min.css" />
+  <!-- Estilos principales -->
+  <link rel="stylesheet" href="<?php echo APP_URL; ?>css/main.min.css" />
 
-  <!-- Login css -->
-  <link rel="stylesheet" href="<?php echo APP_URL;?>css/login.css" />
-  <!-- Particles CSS -->
-  <link rel="stylesheet" href="<?php echo APP_URL;?>vendor/particles/particles.css" />
+  <!-- Efectos de partículas -->
+  <link rel="stylesheet" href="<?php echo APP_URL; ?>vendor/particles/particles.css" />
 </head>
 
 <body class="login-container">
+  <!-- Efecto de partículas background -->
   <div id="particles-js"></div>
   <div class="countdown-bg"></div>
-  <!-- Login box start -->
+
+  <!-- Contenedor principal del formulario -->
   <div class="container" style="z-index: 1;">
-    <form action="<?php echo APP_URL;?>changePassword" id="registerForm" method="post" class="needs-validation" novalidate>
+    <form action="<?php echo APP_URL; ?>changePassword"
+      id="registerForm"
+      method="post"
+      class="needs-validation"
+      novalidate
+      autocomplete="off">
+
       <div class="login-box rounded-2 p-5">
+        <!-- Cabecera del formulario -->
         <div class="login-form">
-          <a href="<?php echo APP_URL;?>" class="login-logo mb-3">
-          <img src="<?php echo APP_URL;?>images/logo.webp" alt="ienti & manwere" />
+          <a href="<?php echo APP_URL; ?>" class="login-logo mb-3">
+            <img src="<?php echo APP_URL; ?>images/logo.webp" alt="Logo de la aplicación" />
           </a>
-          <h5 class="fw-light mb-5">Introduce tu nueva contraseña</h5>
+          <h5 class="fw-light mb-5">Restablecer Contraseña</h5>
+
+          <!-- Campo: Nueva Contraseña -->
           <div class="mb-3">
-            <label class="form-label">Contraseña</label>
+            <label class="form-label">Nueva Contraseña</label>
             <div class="position-relative">
-              <input name="password" id="password" type="password" class="form-control pe-5"
-                placeholder="Ingresa tu contraseña" required />
+              <input name="password"
+                id="password"
+                type="password"
+                class="form-control pe-5"
+                placeholder="Mínimo 8 caracteres"
+                required
+                minlength="8"
+                pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$"
+                title="Debe contener al menos una mayúscula, una minúscula y un número">
               <button type="button"
                 class="btn btn-link text-decoration-none position-absolute end-0 top-50 translate-middle-y"
                 onclick="togglePasswordVisibility('password', 'eyeIconPassword')"
-                style="transform: translateY(-50%) !important;">
+                aria-label="Mostrar/ocultar contraseña">
                 <i id="eyeIconPassword" class="bi bi-eye-slash"></i>
               </button>
             </div>
           </div>
 
-          <!-- Campo de confirmación modificado -->
+          <!-- Campo: Confirmar Contraseña -->
           <div class="mb-3">
-            <label class="form-label">Confirmar contraseña</label>
+            <label class="form-label">Confirmar Contraseña</label>
             <div class="position-relative">
-              <input name="password_confirm" id="password_confirm" type="password" class="form-control pe-5"
-                placeholder="Confirmar contraseña" required />
+              <input name="password_confirm"
+                id="password_confirm"
+                type="password"
+                class="form-control pe-5"
+                placeholder="Repite tu contraseña"
+                required>
               <button type="button"
                 class="btn btn-link text-decoration-none position-absolute end-0 top-50 translate-middle-y"
                 onclick="togglePasswordVisibility('password_confirm', 'eyeIconConfirm')"
-                style="transform: translateY(-50%) !important;">
+                aria-label="Mostrar/ocultar confirmación">
                 <i id="eyeIconConfirm" class="bi bi-eye-slash"></i>
               </button>
             </div>
@@ -76,91 +108,82 @@
               Las contraseñas no coinciden
             </div>
           </div>
-        </div>
-        <div class="d-grid py-3">
-          <button type="submit" class="btn btn-lg btn-primary">
-            Cambiar Contraseña
-          </button>
+
+          <!-- Botón de submit -->
+          <div class="d-grid py-3">
+            <button type="submit" class="btn btn-lg btn-primary">
+              Actualizar Contraseña
+            </button>
+          </div>
         </div>
       </div>
+    </form>
   </div>
-  </form>
-  </div>
-  <!-- Login box end -->
-  <!-- validations -->
-<script src="<?php echo APP_URL;?>js/validations.js"></script>
-  <!-- sweetalert2 -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <!-- Particles JS -->
-<script src="<?php echo APP_URL;?>vendor/particles/particles.min.js"></script>
-<script src="<?php echo APP_URL;?>vendor/particles/particles-custom.js"></script>
+
+  <!-- *************
+       Scripts 
+       ************* -->
+  <!-- Validaciones de formulario -->
+  <script src="<?php echo APP_URL; ?>js/validations.js"></script>
+
+  <!-- SweetAlert2 para notificaciones -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <!-- Efectos de partículas -->
+  <script src="<?php echo APP_URL; ?>vendor/particles/particles.min.js"></script>
+  <script src="<?php echo APP_URL; ?>vendor/particles/particles-custom.js"></script>
+
+  <!-- Scripts personalizados -->
   <script>
-    document.getElementById('registerForm').addEventListener('submit', function (e) {
-      const pass1 = document.getElementById('password').value;
-      const pass2 = document.getElementById('password_confirm').value;
+    /**
+     * Valida coincidencia de contraseñas antes de enviar
+     * @listens submit
+     */
+    document.getElementById('registerForm').addEventListener('submit', function(e) {
+      const [pass1, pass2] = ['password', 'password_confirm'].map(id =>
+        document.getElementById(id).value
+      );
 
       if (pass1 !== pass2) {
         e.preventDefault();
         Swal.fire({
           icon: 'error',
-          title: 'Error',
-          text: 'Las contraseñas no coinciden',
-          timer: 1500
+          title: 'Error de validación',
+          text: 'Las contraseñas deben coincidir',
+          timer: 2000
         });
         document.getElementById('password_confirm').focus();
       }
     });
 
-    // Validación en tiempo real
-    document.getElementById('password_confirm').addEventListener('input', function () {
+    /**
+     * Validación en tiempo real de contraseñas
+     * @listens input
+     */
+    document.getElementById('password_confirm').addEventListener('input', function() {
       const pass1 = document.getElementById('password').value;
       const pass2 = this.value;
       const feedback = document.getElementById('password-feedback');
 
-      if (pass1 !== pass2) {
-        this.classList.add('is-invalid');
-        feedback.style.display = 'block';
-      } else {
-        this.classList.remove('is-invalid');
-        feedback.style.display = 'none';
-      }
+      this.classList.toggle('is-invalid', pass1 !== pass2);
+      feedback.style.display = pass1 !== pass2 ? 'block' : 'none';
     });
-  </script>
-  <script>
+
+    /**
+     * Alterna la visibilidad de los campos de contraseña
+     * @function togglePasswordVisibility
+     * @param {string} fieldId - ID del campo
+     * @param {string} iconId - ID del icono
+     */
     function togglePasswordVisibility(fieldId, iconId) {
-      const passwordInput = document.getElementById(fieldId);
-      const eyeIcon = document.getElementById(iconId);
+      const field = document.getElementById(fieldId);
+      const icon = document.getElementById(iconId);
 
-      if (passwordInput.type === 'password') {
-        passwordInput.type = 'text';
-        eyeIcon.classList.remove('bi-eye-slash');
-        eyeIcon.classList.add('bi-eye');
-      } else {
-        passwordInput.type = 'password';
-        eyeIcon.classList.remove('bi-eye');
-        eyeIcon.classList.add('bi-eye-slash');
-      }
+      field.type = field.type === 'password' ? 'text' : 'password';
+      icon.classList.toggle('bi-eye-slash');
+      icon.classList.toggle('bi-eye');
     }
   </script>
-  <style>
-    /* Estilos mejorados */
-    .bi-eye-slash,
-    .bi-eye {
-      font-size: 1.2rem;
-      color: #6c757d;
-      cursor: pointer;
-      padding-right: 12px;
-    }
-
-    .position-absolute {
-      right: 5px;
-      z-index: 2;
-    }
-
-    .form-control.pe-5 {
-      padding-right: 2.5rem !important;
-    }
-  </style>
 </body>
 
 </html>

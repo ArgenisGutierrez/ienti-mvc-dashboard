@@ -1,23 +1,38 @@
 <?php
+
+/**
+ * Vista de administración de usuarios del sistema
+ * 
+ * @category Vistas
+ * @package  Usuarios
+ * 
+ * @uses \Lib\Alert Para mostrar notificaciones
+ * @see  \App\Controllers\UsuarioController Controlador asociado
+ * 
+ * @var array $usuarios Listado de usuarios registrados
+ * @var array $roles Listado de roles disponibles
+ */
 session_start();
 if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
-    session_regenerate_id(true);
-    ?>
+  session_regenerate_id(true);
+?>
   <!DOCTYPE html>
   <html lang="es-MX">
 
   <head>
+    <!-- Meta -->
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Titulo Dinamico -->
     <title>
       <?php echo APP_NAME; ?>
     </title>
 
-    <!-- Meta -->
+    <!-- Favicon -->
     <link rel="shortcut icon" href="images/icon.ico" />
 
     <!-- *************
-            ************ Common Css Files *************
+         Common Css Files 
         ************ -->
     <!-- Bootstrap css -->
     <link rel="stylesheet" href="css/bootstrap.min.css" />
@@ -29,7 +44,7 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
     <link rel="stylesheet" href="css/main.min.css" />
 
     <!-- *************
-            ************ Vendor Css Files *************
+        Vendor Css Files 
         ************ -->
 
     <!-- Scrollbar CSS -->
@@ -134,7 +149,7 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                                       <option selected disabled value="">Asignar...</option>
                                       <?php foreach ($roles as $role) { ?>
                                         <option value="<?php echo $role['id_rol'] ?>">
-                                            <?php echo $role['nombre_rol'] ?>
+                                          <?php echo $role['nombre_rol'] ?>
                                         </option>
                                       <?php } ?>
                                     </select>
@@ -183,9 +198,9 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                               </td>
                               <td>
                                 <?php if ($usuario['estado'] == 1) {
-                                    echo "Activo";
+                                  echo "Activo";
                                 } else {
-                                    echo "Desactivado";
+                                  echo "Desactivado";
                                 } ?>
                               </td>
                               <td>
@@ -229,7 +244,7 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                                               <option disabled value="">Asignar...</option>
                                               <?php foreach ($roles as $role): ?>
                                                 <option value="<?php echo $role['id_rol'] ?>" <?php echo ($role['id_rol'] == $usuario['id_rol']) ? 'selected' : '' ?>>
-                                                    <?php echo $role['nombre_rol'] ?>
+                                                  <?php echo $role['nombre_rol'] ?>
                                                 </option>
                                               <?php endforeach; ?>
                                             </select>
@@ -314,8 +329,17 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
         <!-- sweetalert2 -->
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+        <?php Lib\Alert::display(); ?>
+
         <script src="js/usuarios.js"></script>
+        <!-- *************
+         Scripts 
+         ************* -->
         <script>
+          /**
+           * Confirmación de eliminación con SweetAlert2
+           * @listens submit
+           */
           $(document).on('submit', 'form[id^="formEliminar"]', function(e) {
             console.log("Formulario enviado"); // ¿Aparece esto en la consola?
             e.preventDefault();
@@ -337,8 +361,11 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
             });
           });
         </script>
-        <?php Lib\Alert::display(); ?>
         <script>
+          /**
+           * Inicialización de DataTables para usuarios
+           * @function
+           */
           $(function() {
             // Destruir instancia previa si existe
             if ($.fn.DataTable.isDataTable('#usuarios_table')) {
@@ -401,9 +428,9 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
 
   </html>
 
-    <?php
+<?php
 } else {
-    header('Location:' . APP_URL . 'login');
-    exit();
+  header('Location:' . APP_URL . 'login');
+  exit();
 }
 ?>

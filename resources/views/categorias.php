@@ -1,25 +1,40 @@
 <?php
+
+/**
+ * Vista de administración de categorías y subcategorías
+ * 
+ * @category Vistas
+ * @package  Categorias
+ * 
+ * @uses \Lib\Alert Para mostrar notificaciones
+ * @see  \App\Controllers\CategoriaController Controlador asociado
+ * 
+ * @var array $categorias Listado de categorías desde controlador
+ * @var array $subcategorias Listado de subcategorías con relaciones
+ */
 session_start();
 if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
-  session_regenerate_id(true);
-?>
+    session_regenerate_id(true);
+    ?>
   <!DOCTYPE html>
   <html lang="es-MX">
 
   <head>
+    <!-- Metadatos comunes -->
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Título dinámico -->
     <title>
       <?php echo APP_NAME; ?>
     </title>
 
-    <!-- Meta -->
+    <!-- Favicon -->
     <link rel="shortcut icon" href="images/icon.ico" />
 
     <!-- *************
-            ************ Common Css Files *************
-        ************ -->
-    <!-- Bootstrap css -->
+         Hojas de estilo 
+         ************* -->
+    <!-- Bootstrap core -->
     <link rel="stylesheet" href="css/bootstrap.min.css" />
 
     <!-- Bootstrap font icons css -->
@@ -29,7 +44,7 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
     <link rel="stylesheet" href="css/main.min.css" />
 
     <!-- *************
-            ************ Vendor Css Files *************
+        Vendor Css Files 
         ************ -->
 
     <!-- Scrollbar CSS -->
@@ -149,7 +164,7 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                               <td>
                                 <?php echo $categoria['nombre_categoria'] ?>
                               </td>
-                              <?php if (isset($_SESSION['permisos']) && in_array("Editar Categorias", $_SESSION['permisos'])) : ?>
+                                <?php if (isset($_SESSION['permisos']) && in_array("Editar Categorias", $_SESSION['permisos'])) : ?>
                                 <td>
                                   <!-- Botón que abre el modal específico para cada registro -->
                                   <button type="button" class="btn btn-primary editar-btn" data-bs-toggle="modal"
@@ -195,8 +210,8 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                                     </div>
                                   </div>
                                 </td>
-                              <?php endif; ?>
-                              <?php if (isset($_SESSION['permisos']) && in_array("Eliminar Categorias", $_SESSION['permisos'])) : ?>
+                                <?php endif; ?>
+                                <?php if (isset($_SESSION['permisos']) && in_array("Eliminar Categorias", $_SESSION['permisos'])) : ?>
                                 <td>
                                   <!-- Formulario para eliminar -->
                                   <form id="formEliminar<?php echo $categoria['id_categoria'] ?>" method="POST"
@@ -208,7 +223,7 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                                     </button>
                                   </form>
                                 </td>
-                              <?php endif; ?>
+                                <?php endif; ?>
                             </tr>
                           <?php } ?>
                         </tbody>
@@ -304,7 +319,7 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                               <td>
                                 <?php echo $subcategoria['nombre_subcategoria'] ?>
                               </td>
-                              <?php if (isset($_SESSION['permisos']) && in_array("Editar Categorias", $_SESSION['permisos'])) : ?>
+                                <?php if (isset($_SESSION['permisos']) && in_array("Editar Categorias", $_SESSION['permisos'])) : ?>
                                 <td>
                                   <!-- Botón que abre el modal específico para cada registro -->
                                   <button type="button" class="btn btn-primary editar-btn" data-bs-toggle="modal"
@@ -339,7 +354,7 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                                                   <?php foreach ($categorias as $categoria) : ?>
                                                     <option <?php echo ($categoria['id_categoria'] == ($subcategoria['id_categoria'] ?? null)) ? 'selected' : ''; ?>
                                                       value="<?php echo $categoria['id_categoria'] ?>">
-                                                      <?php echo $categoria['nombre_categoria'] ?></option>
+                                                        <?php echo $categoria['nombre_categoria'] ?></option>
                                                   <?php endforeach; ?>
                                                 </select>
                                               </div>
@@ -362,8 +377,8 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                                     </div>
                                   </div>
                                 </td>
-                              <?php endif; ?>
-                              <?php if (isset($_SESSION['permisos']) && in_array("Eliminar Categorias", $_SESSION['permisos'])) : ?>
+                                <?php endif; ?>
+                                <?php if (isset($_SESSION['permisos']) && in_array("Eliminar Categorias", $_SESSION['permisos'])) : ?>
                                 <td>
                                   <!-- Formulario para eliminar -->
                                   <form id="formEliminar<?php echo $subcategoria['id_subcategoria'] ?>" method="POST"
@@ -375,7 +390,7 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
                                     </button>
                                   </form>
                                 </td>
-                              <?php endif; ?>
+                                <?php endif; ?>
                             </tr>
                           <?php } ?>
                         </tbody>
@@ -405,7 +420,7 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
     <!-- Page wrapper end -->
 
     <!-- *************
-            ************ Required JavaScript Files *************
+         Required JavaScript Files
         ************* -->
     <!-- Required jQuery first, then Bootstrap Bundle JS -->
     <script src="js/jquery.min.js"></script>
@@ -438,7 +453,17 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
     <!-- sweetalert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    <!-- Lib Alert -->
+    <?php Lib\Alert::display(); ?>
+
+    <!-- *************
+         Scripts 
+         ************* -->
     <script>
+      /**
+       * Confirmación de eliminación con SweetAlert2
+       * @listens submit
+       */
       $(document).on('submit', 'form[id^="formEliminar"]', function(e) {
         console.log("Formulario enviado"); // ¿Aparece esto en la consola?
         e.preventDefault();
@@ -460,8 +485,11 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
         });
       });
     </script>
-    <?php Lib\Alert::display(); ?>
     <script>
+      /**
+       * Inicialización de DataTables para categorías
+       * @function
+       */
       $(function() {
         $('#categoria_table').DataTable({
           columnDefs: [{
@@ -510,6 +538,10 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
       });
     </script>
     <script>
+      /**
+       * Inicialización de DataTables para subcategorias
+       * @function
+       */
       $(function() {
         $('#subcategoria_table').DataTable({
           columnDefs: [{
@@ -560,8 +592,8 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
   </body>
 
   </html>
-<?php
+    <?php
 } else {
-  header('Location:' . APP_URL . 'login');
-  exit();
+    header('Location:' . APP_URL . 'login');
+    exit();
 }

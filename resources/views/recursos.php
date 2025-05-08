@@ -1,4 +1,20 @@
 <?php
+
+/**
+ * Vista de administración de recursos multimedia
+ * 
+ * @category Vistas
+ * @package  Recursos
+ * 
+ * @uses \Lib\Alert Para mostrar notificaciones
+ * @see  \App\Controllers\RecursoController Controlador asociado
+ * @uses \Layouts\head.php Header común
+ * @uses \Layouts\menu.php Menú lateral
+ * 
+ * @var array $categorias Listado de categorías
+ * @var array $subcategorias Listado de subcategorías
+ * @var array $recursos Listado de recursos con metadatos
+ */
 session_start();
 if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
   session_regenerate_id(true);
@@ -7,19 +23,21 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
   <html lang="es-MX">
 
   <head>
+    <!-- Meta -->
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Titulo Dinamico -->
     <title>
       <?php echo APP_NAME; ?>
     </title>
 
-    <!-- Meta -->
+    <!-- Favicon -->
     <link rel="shortcut icon" href="images/icon.ico" />
 
     <!-- *************
-            ************ Common Css Files *************
-        ************ -->
-    <!-- Bootstrap css -->
+         Hojas de estilo 
+         ************* -->
+    <!-- Bootstrap core -->
     <link rel="stylesheet" href="css/bootstrap.min.css" />
 
     <!-- Bootstrap font icons css -->
@@ -29,7 +47,7 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
     <link rel="stylesheet" href="css/main.min.css" />
 
     <!-- *************
-            ************ Vendor Css Files *************
+        Vendor Css Files 
         ************ -->
 
     <!-- Scrollbar CSS -->
@@ -454,10 +472,21 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
 
       <!-- sweetalert2 -->
       <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+      <!-- Lib Alert -->
       <?php Lib\Alert::display(); ?>
+
+      <!-- script maneja el cambio de tipo de recurso -->
       <script src="js/recursos.js"></script>
 
+      <!-- *************
+         Scripts 
+         ************* -->
       <script>
+        /**
+         * Confirmación de eliminación con SweetAlert2
+         * @listens submit
+         */
         $(document).on('submit', 'form[id^="formEliminar"]', function(e) {
           console.log("Formulario enviado"); // ¿Aparece esto en la consola?
           e.preventDefault();
@@ -480,6 +509,10 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
         });
       </script>
       <script>
+        /**
+         * Inicialización de DataTables
+         * @function
+         */
         $(function() {
           // Configuración común para todas las tablas
           const dataTableConfig = {
@@ -563,7 +596,12 @@ if (!empty($_SESSION['usuario_id']) && !empty($_SESSION['nombre'])) {
           const categoriaCreate = document.getElementById('categoria_recurso');
           const subcategoriaCreate = document.getElementById('subcategoria_recurso');
 
-          // Función universal para actualizar subcategorías
+          /**
+           * Gestión dinámica de subcategorías
+           * @function actualizarSubcategorias
+           * @param {HTMLSelectElement} categoriaSelect - Selector de categoría
+           * @param {HTMLSelectElement} subcategoriaSelect - Selector de subcategoría
+           */
           function actualizarSubcategorias(categoriaSelect, subcategoriaSelect) {
             const categoriaId = categoriaSelect.value;
             const currentSub = subcategoriaSelect.dataset.currentSub || null;
